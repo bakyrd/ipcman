@@ -130,9 +130,6 @@ dist
 .yarn/install-state.gz
 .pnp.*
 
-# Lockfiles
-yarn.lock
-
 # Artifacts
 build/
 lib/
