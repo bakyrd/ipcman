@@ -1,0 +1,38 @@
+{
+  "name": "ipcman",
+  "version": "0.1.0",
+  "description": "Electron IPC Hook/Devtools",
+  "repository": "https://github.com/ilharp/ipcman.git",
+  "author": {
+    "name": "Il Harper",
+    "email": "hi@ilharper.com",
+    "url": "https://ilharper.com"
+  },
+  "license": "MIT",
+  "private": false,
+  "type": "module",
+  "main": "cjs/index.js",
+  "module": "esm/index.js",
+  "typings": "esm/index.d.ts",
+  "exports": {
+    ".": {
+      "require": "./cjs/index.js",
+      "import": "./esm/index.js",
+      "types": "./esm/index.d.ts"
+    },
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "cjs",
+    "esm"
+  ],
+  "sideEffects": false,
+  "scripts": {
+    "build": "concurrently -n esm,cjs yarn:build:esm yarn:build:cjs",
+    "build:esm": "tsc -b tsconfig.json",
+    "build:cjs": "tsc -b tsconfig.cjs.json",
+    "watch": "concurrently -n esm,cjs yarn:watch:esm yarn:watch:cjs",
+    "watch:esm": "tsc -b -w tsconfig.json",
+    "watch:cjs": "tsc -b -w tsconfig.cjs.json"
+  }
+}
