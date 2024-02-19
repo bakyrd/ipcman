@@ -6,6 +6,10 @@
   "workspaces": [
     "packages/*"
   ],
+  "scripts": {
+    "build": "yarn workspace ipcman build",
+    "watch": "yarn workspace ipcman watch"
+  },
   "devDependencies": {
     "@tsconfig/strictest": "^2.0.3",
     "@types/jest": "^29.5.12",
