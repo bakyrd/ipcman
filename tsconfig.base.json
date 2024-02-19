@@ -10,5 +10,6 @@
     "skipLibCheck": true,
     "esModuleInterop": true,
     "jsx": "react-jsx",
+    "noPropertyAccessFromIndexSignature": false,
   }
 }

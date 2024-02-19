@@ -40,7 +40,7 @@ const appDarkTheme: PartialTheme = {
 }
 
 export const App: FC = () => (
-  <ThemeProvider className={styles['theme-provider']} theme={appDarkTheme}>
+  <ThemeProvider className={styles.themeProvider} theme={appDarkTheme}>
     <Root />
   </ThemeProvider>
 )
