@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>IpcMan Devtools</title>
+  </head>
+  <body>
+    <div id="ipcman">
+      <style>
+        .spinner-container {
+          position: absolute;
+
+          left: 0;
+          top: 0;
+
+          height: 100vh;
+          width: 100vw;
+
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+
+        .spinner {
+          display: inline-block;
+
+          height: 50px;
+          width: 50px;
+          margin: 0 auto;
+
+          animation: initial-load-animate 1s infinite linear;
+
+          box-sizing: border-box;
+          border: 4px solid #ccc;
+          border-radius: 50%;
+          border-top-color: #000;
+        }
+
+        @keyframes initial-load-animate {
+          0% {
+            transform: rotate(0deg);
+          }
+
+          100% {
+            transform: rotate(359deg);
+          }
+        }
+      </style>
+      <div class="spinner-container">
+        <i class="spinner"></i>
+      </div>
+    </div>
+  </body>
+</html>
