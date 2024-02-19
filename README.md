@@ -1,3 +1,1 @@
-# ipcman
-
-Electron IPC Hook/Devtools
+packages/ipcman/README.md
