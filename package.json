@@ -3,6 +3,9 @@
   "version": "0.0.0",
   "private": true,
   "packageManager": "yarn@4.1.0",
+  "workspaces": [
+    "packages/*"
+  ],
   "devDependencies": {
     "@tsconfig/strictest": "^2.0.3",
     "@types/jest": "^29.5.12",

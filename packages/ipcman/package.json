@@ -9,7 +9,6 @@
     "url": "https://ilharper.com"
   },
   "license": "MIT",
-  "private": false,
   "type": "module",
   "main": "cjs/index.js",
   "module": "esm/index.js",
