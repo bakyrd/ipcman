@@ -1,0 +1,42 @@
+{
+  "name": "@ipcman/devtools-fe",
+  "version": "0.0.0",
+  "private": true,
+  "author": {
+    "name": "Il Harper",
+    "email": "hi@ilharper.com",
+    "url": "https://ilharper.com"
+  },
+  "license": "MIT",
+  "files": [
+    "build"
+  ],
+  "scripts": {
+    "dev": "craco start",
+    "build": "craco build"
+  },
+  "devDependencies": {
+    "@craco/craco": "^7.1.0",
+    "@craco/types": "^7.1.0",
+    "@fluentui/fluent2-theme": "^8.105.1",
+    "@fluentui/react": "^8.106.4",
+    "ahooks": "^3.7.5",
+    "immer": "^9.0.19",
+    "react": "18.2.0",
+    "react-dom": "18.2.0",
+    "react-scripts": "5.0.1",
+    "use-immer": "^0.8.1"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  }
+}
