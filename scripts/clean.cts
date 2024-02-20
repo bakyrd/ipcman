@@ -8,6 +8,7 @@ void Promise.all(
     '../packages/ipcman/esm',
     '../packages/ipcman/tsconfig.cjs.tsbuildinfo',
     '../packages/ipcman/tsconfig.tsbuildinfo',
+    '../packages/devtools/lib',
     '../packages/devtools-fe/build',
   ].map((x) =>
     rm(resolve(__dirname, x), {
