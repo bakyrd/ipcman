@@ -7,8 +7,8 @@
     "packages/*"
   ],
   "scripts": {
-    "build": "yarn workspace ipcman build",
-    "watch": "yarn workspace ipcman watch"
+    "clean": "ts-node -T scripts/clean.cts",
+    "build": "concurrently -n core,fe \"yarn workspace ipcman build\" \"yarn workspace @ipcman/devtools-fe build\" && yarn workspace @ipcman/devtools build"
   },
   "devDependencies": {
     "@tsconfig/strictest": "^2.0.3",

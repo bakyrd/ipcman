@@ -11,5 +11,10 @@
     "esModuleInterop": true,
     "jsx": "react-jsx",
     "noPropertyAccessFromIndexSignature": false,
-  }
+  },
+  "ts-node": {
+    "compilerOptions": {
+      "moduleResolution": "Node",
+    }
+  },
 }
