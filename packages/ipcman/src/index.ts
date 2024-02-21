@@ -5,6 +5,7 @@ import type {
   WebContents,
 } from 'electron'
 import { ipcMain } from 'electron'
+import type EventEmitter from 'node:events'
 
 export type IpcEvent<S extends symbol> = Omit<IpcMainEvent, 'sender'> & {
   sender: WebContents & Record<S, boolean>
@@ -61,10 +62,15 @@ export interface IpcManConfig<IpcArgs extends unknown[] = unknown[]> {
   getId?: (p: IpcArgs) => string | undefined
 }
 
+export interface IpcManContext {
+  emit: EventEmitter['emit']
+  senderExcludeSymbol: symbol
+}
+
 export const ipcMan = <IpcArgs extends unknown[] = unknown[]>(
   config: IpcManConfig<IpcArgs>,
-) => {
-  const sym: unique symbol = Symbol()
+): IpcManContext => {
+  const senderExcludeSymbol: unique symbol = Symbol()
 
   let iHandle = 0
 
@@ -72,12 +78,12 @@ export const ipcMan = <IpcArgs extends unknown[] = unknown[]>(
   ipcMain.emit = function (
     this: IpcMain,
     eventName: string | symbol,
-    event: IpcEvent<typeof sym>,
+    event: IpcEvent<typeof senderExcludeSymbol>,
     ...p: IpcArgs
   ) {
     const sender = event.sender
-    if (!sender[sym]) {
-      sender[sym] = true
+    if (!sender[senderExcludeSymbol]) {
+      sender[senderExcludeSymbol] = true
 
       const send = sender.send.bind(sender)
       sender.send = function (channel, ...e) {
@@ -151,5 +157,10 @@ export const ipcMan = <IpcArgs extends unknown[] = unknown[]>(
     }
 
     handle.call(this, method, wrappedFn)
+  }
+
+  return {
+    emit,
+    senderExcludeSymbol,
   }
 }
