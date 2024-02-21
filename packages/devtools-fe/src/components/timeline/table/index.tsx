@@ -5,16 +5,29 @@ import {
   useReactTable,
 } from '@tanstack/react-table'
 import type { FC } from 'react'
-import type { IpcManItem } from '../../services/remote'
+import type { IpcManItem } from '../../../services/remote'
+import { ipcManDataTypeMap } from './consts'
 
 const columnHelper = createColumnHelper<IpcManItem>()
 
 const columns = [
   columnHelper.accessor('index', {}),
-  columnHelper.accessor('data.type', {}),
+  columnHelper.accessor('data.type', {
+    cell: (info) => ipcManDataTypeMap[info.getValue()].name,
+  }),
   columnHelper.accessor('data.channel', {}),
-  columnHelper.accessor('data.requestArgs', {}),
-  columnHelper.accessor('data.responseArgs', {}),
+  columnHelper.accessor(
+    (x) => (x.data.requestArgs ? JSON.stringify(x.data.requestArgs) : ''),
+    {
+      id: 'requestArgs',
+    },
+  ),
+  columnHelper.accessor(
+    (x) => (x.data.responseArgs ? JSON.stringify(x.data.responseArgs) : ''),
+    {
+      id: 'responseArgs',
+    },
+  ),
 ]
 
 export const TimelineTable: FC<{
