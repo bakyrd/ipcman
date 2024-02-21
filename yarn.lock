@@ -2343,9 +2343,11 @@ __metadata:
   resolution: "@ipcman/devtools@workspace:packages/devtools"
   dependencies:
     "@koa/bodyparser": "npm:^5.0.0"
+    "@koa/cors": "npm:^5.0.0"
     "@koa/router": "npm:^12.0.1"
     "@types/koa": "npm:^2.14.0"
     "@types/koa-static": "npm:^4.0.4"
+    "@types/koa__cors": "npm:^5.0.0"
     "@types/koa__router": "npm:^12.0.4"
     "@types/ws": "npm:^8.5.10"
     koa: "npm:^2.15.0"
@@ -2966,6 +2968,15 @@ __metadata:
     lodash.merge: "npm:^4.6.2"
     type-is: "npm:^1.6.18"
   checksum: 10c0/601ff46306f9f4b4b088e518ac9c0c358e9722e18877494263018ac448c8b389547919b8a2b933b3a2e825d00005e5ead7a738a1796992b2971f16495029c2cb
+  languageName: node
+  linkType: hard
+
+"@koa/cors@npm:^5.0.0":
+  version: 5.0.0
+  resolution: "@koa/cors@npm:5.0.0"
+  dependencies:
+    vary: "npm:^1.1.2"
+  checksum: 10c0/49e5f3b861590bd81aa3663a2f0658234a9b378840bb54a2947b3c5f2067f9d966b6fa2e9049fdc7c74c787456d1885bacd0b7ee1f134274d28282c7df99c3fd
   languageName: node
   linkType: hard
 
@@ -3768,6 +3779,15 @@ __metadata:
     "@types/koa-compose": "npm:*"
     "@types/node": "npm:*"
   checksum: 10c0/783536ea905244ec8edcda5f6063f34b3f4bfe16ff75f4d8faaa9b3ce58455ff140b20e63064a31491c1e7f34de4e869bce410fb116012887b9792c98591f744
+  languageName: node
+  linkType: hard
+
+"@types/koa__cors@npm:^5.0.0":
+  version: 5.0.0
+  resolution: "@types/koa__cors@npm:5.0.0"
+  dependencies:
+    "@types/koa": "npm:*"
+  checksum: 10c0/2392b4ad63b8f730fee49f5c2104602613e77cac8e5aaac42cd74c60107563ad6e1194422b565519462eb5358746f59f19f5e890896494f7e7de1ac71566bbb2
   languageName: node
   linkType: hard
 

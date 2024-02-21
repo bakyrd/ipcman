@@ -1,4 +1,5 @@
 import { bodyParser } from '@koa/bodyparser'
+import cors from '@koa/cors'
 import Router from '@koa/router'
 import type { IpcManConfig, IpcManData } from 'ipcman'
 import { ipcMan } from 'ipcman'
@@ -83,6 +84,8 @@ export const ipcManDevtools = async (config: IpcManDevtoolsConfig) => {
   })
 
   app
+
+    .use(cors())
 
     .use(serve(join(__dirname, 'build')))
 
