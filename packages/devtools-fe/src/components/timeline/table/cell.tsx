@@ -41,7 +41,7 @@ export const IndexCell: FC<{
       <Stack className={styles.indexCell!}>
         <div className={styles.indexCellIndex} children={index} />
         <div className={styles.indexCellTimestamp}>
-          +{(timestamp - info.startTime) / 1000}
+          +{((timestamp - info.startTime) / 1000).toFixed(3)}
         </div>
       </Stack>
     </Stack>
