@@ -11,27 +11,10 @@ import type { Dispatch, FC, SetStateAction } from 'react'
 import { useRef } from 'react'
 import type { IpcManItem } from '../../../services/remote'
 import { useRemote } from '../../../services/remote'
-import { ipcManDataTypeMap } from './consts'
+import { IndexCell, TextCell, TypeCell } from './cell'
 import styles from './index.module.scss'
 
 const columnHelper = createColumnHelper<IpcManItem>()
-
-const TextCell: FC<{
-  children: string
-}> = ({ children }) => {
-  return (
-    <div
-      className={
-        children ? styles.textCellContainer : styles.textCellContainerEmpty
-      }
-    >
-      <div
-        className={children ? styles.textCell : styles.textCellEmpty}
-        children={children}
-      />
-    </div>
-  )
-}
 
 const columns = [
   columnHelper.display({
@@ -40,16 +23,21 @@ const columns = [
     size: 48,
     enableResizing: false,
   }),
-  columnHelper.accessor('index', {
+  columnHelper.accessor((x) => [x.index, x.timestamp], {
+    id: 'indexcol',
     header: 'Index',
-    size: 48,
+    size: 72,
     enableResizing: false,
+    cell: (info) => {
+      const [index, timestamp] = info.getValue()
+      return <IndexCell index={index!} timestamp={timestamp!} />
+    },
   }),
   columnHelper.accessor('data.type', {
     header: 'Type',
     size: 48,
     enableResizing: false,
-    cell: (info) => ipcManDataTypeMap[info.getValue()].name,
+    cell: (info) => <TypeCell type={info.getValue()} />,
   }),
   columnHelper.accessor('data.channel', {
     header: 'Channel',
@@ -58,16 +46,16 @@ const columns = [
   columnHelper.accessor(
     (x) => (x.data.requestArgs ? JSON.stringify(x.data.requestArgs) : ''),
     {
-      header: 'Request',
       id: 'requestArgs',
+      header: 'Request',
       cell: (info) => <TextCell children={info.getValue()} />,
     },
   ),
   columnHelper.accessor(
     (x) => (x.data.responseArgs ? JSON.stringify(x.data.responseArgs) : ''),
     {
-      header: 'Response',
       id: 'responseArgs',
+      header: 'Response',
       cell: (info) => <TextCell children={info.getValue()} />,
     },
   ),

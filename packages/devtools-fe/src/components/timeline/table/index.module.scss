@@ -78,21 +78,3 @@
     opacity: 1;
   }
 }
-
-.textCell {
-  text-overflow: ellipsis;
-  overflow: hidden;
-
-  margin: 3px;
-
-  &Container {
-    overflow: hidden;
-
-    flex-grow: 1;
-    background: #1d1d1d;
-
-    &Empty {
-      background: black;
-    }
-  }
-}
