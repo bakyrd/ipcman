@@ -25,7 +25,7 @@ export const CodeInspector: FC<{
         height="100%"
         options={options}
         loading={loading}
-        theme="dark"
+        theme="vs-dark"
         language="json"
         value={value}
       />

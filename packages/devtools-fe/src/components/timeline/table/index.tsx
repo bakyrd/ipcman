@@ -19,7 +19,18 @@ const columnHelper = createColumnHelper<IpcManItem>()
 const TextCell: FC<{
   children: string
 }> = ({ children }) => {
-  return <div className={styles.textCell} children={children} />
+  return (
+    <div
+      className={
+        children ? styles.textCellContainer : styles.textCellContainerEmpty
+      }
+    >
+      <div
+        className={children ? styles.textCell : styles.textCellEmpty}
+        children={children}
+      />
+    </div>
+  )
 }
 
 const columns = [

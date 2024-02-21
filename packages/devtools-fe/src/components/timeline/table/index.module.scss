@@ -31,6 +31,9 @@
 
   display: flex;
   width: 100%;
+
+  // background: #00000024;
+  backdrop-filter: blur(8px);
 }
 
 .tHeadCell {
@@ -77,6 +80,19 @@
 }
 
 .textCell {
-  overflow: hidden;
   text-overflow: ellipsis;
+  overflow: hidden;
+
+  margin: 3px;
+
+  &Container {
+    overflow: hidden;
+
+    flex-grow: 1;
+    background: #1d1d1d;
+
+    &Empty {
+      background: black;
+    }
+  }
 }
