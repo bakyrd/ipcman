@@ -49,7 +49,7 @@ export const ipcManDevtools = async (config: IpcManDevtoolsConfig) => {
     prefix: '/v0',
   })
 
-  router.post('/info', (ctx) => {
+  router.get('/info', (ctx) => {
     ctx.body = {
       startTime,
     }
