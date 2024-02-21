@@ -1,4 +1,63 @@
+.overflowContainer {
+  overflow: auto; // Our scrollable table container
+  position: relative; // Needed for sticky header
+
+  height: 0;
+  min-height: 100%;
+}
+
 .table {
   word-break: break-all;
   overflow-wrap: anywhere;
+
+  display: grid;
+}
+
+.tHead {
+  display: grid;
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+
+.tHeadRow {
+  display: flex;
+  width: 100%;
+}
+
+.tHeadCell {
+  display: flex;
+  position: relative;
+}
+
+.tBody {
+  display: grid;
+  position: relative; // Needed for absolute positioning of rows
+}
+
+.tRow {
+  display: flex;
+  position: absolute;
+  width: 100%;
+}
+
+.tCell {
+  display: flex;
+}
+
+.resizer {
+  position: absolute;
+  right: 0;
+  top: 0;
+  height: 100%;
+  width: 2px;
+  background: white;
+  opacity: 0.2;
+  cursor: col-resize;
+  user-select: none;
+  touch-action: none;
+
+  &.isResizing {
+    opacity: 1;
+  }
 }

@@ -1,10 +1,14 @@
+import type { Row } from '@tanstack/react-table'
 import {
   createColumnHelper,
   flexRender,
   getCoreRowModel,
   useReactTable,
 } from '@tanstack/react-table'
+import { useVirtualizer } from '@tanstack/react-virtual'
+import { clsx } from 'clsx/lite'
 import type { FC } from 'react'
+import { useRef } from 'react'
 import type { IpcManItem } from '../../../services/remote'
 import { ipcManDataTypeMap } from './consts'
 import styles from './index.module.scss'
@@ -43,59 +47,104 @@ export const TimelineTable: FC<{
     enableColumnResizing: true,
     columnResizeMode: 'onChange',
   })
+
+  const { rows } = table.getRowModel()
+
+  const tableContainerRef = useRef<HTMLDivElement>(null)
+
+  const rowVirtualizer = useVirtualizer({
+    count: rows.length,
+    estimateSize: () => 33, // Estimate row height for accurate scrollbar dragging
+    getScrollElement: () => tableContainerRef.current,
+    // Measure dynamic row height, except in firefox because it measures table border height incorrectly
+    measureElement:
+      typeof window !== 'undefined' &&
+      navigator.userAgent.indexOf('Firefox') === -1
+        ? (element) => element?.getBoundingClientRect().height
+        : (undefined as unknown as () => number),
+    overscan: 5,
+  })
+
   return (
     <>
-      <table className={styles.table}>
-        <thead>
-          {table.getHeaderGroups().map((headerGroup) => (
-            <tr key={headerGroup.id}>
-              {headerGroup.headers.map((header) => {
-                return (
-                  <th
-                    key={header.id}
-                    colSpan={header.colSpan}
-                    style={{ position: 'relative', width: header.getSize() }}
-                  >
-                    {header.isPlaceholder
-                      ? null
-                      : flexRender(
-                          header.column.columnDef.header,
-                          header.getContext(),
-                        )}
-                    {header.column.getCanResize() && (
-                      <div
-                        onMouseDown={header.getResizeHandler()}
-                        onTouchStart={header.getResizeHandler()}
-                        className={`resizer ${
-                          header.column.getIsResizing() ? 'isResizing' : ''
-                        }`}
-                      ></div>
-                    )}
-                  </th>
-                )
-              })}
-            </tr>
-          ))}
-        </thead>
-        <tbody>
-          {table.getRowModel().rows.map((row) => {
-            return (
-              <tr key={row.id}>
-                {row.getVisibleCells().map((cell) => {
+      <div className={styles.overflowContainer} ref={tableContainerRef}>
+        {/* Even though we're still using sematic table tags, we must use CSS grid and flexbox for dynamic row heights */}
+        <table className={styles.table}>
+          <thead className={styles.tHead}>
+            {table.getHeaderGroups().map((headerGroup) => (
+              <tr className={styles.tHeadRow} key={headerGroup.id}>
+                {headerGroup.headers.map((header) => {
                   return (
-                    <td key={cell.id} style={{ width: cell.column.getSize() }}>
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext(),
+                    <th
+                      className={styles.tHeadCell}
+                      key={header.id}
+                      colSpan={header.colSpan}
+                      style={{
+                        width: header.getSize(),
+                      }}
+                    >
+                      {header.isPlaceholder
+                        ? null
+                        : flexRender(
+                            header.column.columnDef.header,
+                            header.getContext(),
+                          )}
+                      {header.column.getCanResize() && (
+                        <div
+                          className={clsx(
+                            styles.resizer,
+                            header.column.getIsResizing() && styles.isResizing,
+                          )}
+                          onMouseDown={header.getResizeHandler()}
+                          onTouchStart={header.getResizeHandler()}
+                        ></div>
                       )}
-                    </td>
+                    </th>
                   )
                 })}
               </tr>
-            )
-          })}
-        </tbody>
-      </table>
+            ))}
+          </thead>
+          <tbody
+            className={styles.tBody}
+            style={{
+              height: `${rowVirtualizer.getTotalSize()}px`, // Tells scrollbar how big the table is
+            }}
+          >
+            {rowVirtualizer.getVirtualItems().map((virtualRow) => {
+              const row = rows[virtualRow.index] as Row<IpcManItem>
+              return (
+                <tr
+                  className={styles.tRow}
+                  data-index={virtualRow.index} // Needed for dynamic row height measurement
+                  ref={(node) => rowVirtualizer.measureElement(node)} // Measure dynamic row height
+                  key={row.id}
+                  style={{
+                    transform: `translateY(${virtualRow.start}px)`, // This should always be a `style` as it changes on scroll
+                  }}
+                >
+                  {row.getVisibleCells().map((cell) => {
+                    return (
+                      <td
+                        className={styles.tCell}
+                        key={cell.id}
+                        style={{
+                          width: cell.column.getSize(),
+                        }}
+                      >
+                        {flexRender(
+                          cell.column.columnDef.cell,
+                          cell.getContext(),
+                        )}
+                      </td>
+                    )
+                  })}
+                </tr>
+              )
+            })}
+          </tbody>
+        </table>
+      </div>
     </>
   )
 }
