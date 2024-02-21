@@ -7,8 +7,14 @@ export interface IpcManInfo {
   startTime: number
 }
 
+export interface IpcManItem {
+  index: number
+  timestamp: number
+  data: IpcManData
+}
+
 export interface RemoteIntl {
-  data: IpcManData[]
+  data: IpcManItem[]
   info: IpcManInfo
 }
 
@@ -43,13 +49,13 @@ export const RemoteProvider: FC<{
     )
 
     ws.addEventListener('message', (e) => {
-      const newData = JSON.parse(e.data as string) as {
-        index: number
-        data: IpcManData
-      }[]
+      const newData = JSON.parse(e.data as string) as IpcManItem[]
 
       editData((draft) =>
-        newData.forEach((d) => void (draft.data[d.index] ||= d.data)),
+        newData.forEach((d) => {
+          if (draft.data.findIndex((x) => x.index === d.index) === -1)
+            draft.data.push(d)
+        }),
       )
     })
 
