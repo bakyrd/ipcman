@@ -3,24 +3,39 @@ import type { FC, ReactNode } from 'react'
 import { createContext, useContext, useEffect } from 'react'
 import { useImmer } from 'use-immer'
 
-export interface Remote {
-  data: IpcManData[]
+export interface IpcManInfo {
+  startTime: number
 }
 
-export const RemoteContext = createContext<IpcManData[]>([])
+export interface RemoteIntl {
+  data: IpcManData[]
+  info: IpcManInfo
+}
+
+const defultRemote = {
+  data: [],
+  info: {
+    startTime: new Date().getTime(),
+  },
+}
+
+export interface Remote extends RemoteIntl {}
+
+export const RemoteContext = createContext<RemoteIntl>(defultRemote)
 
 export const useRemote = (): Remote => {
-  const data = useContext(RemoteContext)
+  const { data, info } = useContext(RemoteContext)
 
   return {
     data,
+    info,
   }
 }
 
 export const RemoteProvider: FC<{
   children?: ReactNode
 }> = ({ children }) => {
-  const [data, editData] = useImmer<IpcManData[]>([])
+  const [data, editData] = useImmer<RemoteIntl>(defultRemote)
 
   useEffect(() => {
     const ws = new WebSocket(
@@ -33,11 +48,22 @@ export const RemoteProvider: FC<{
         data: IpcManData
       }[]
 
-      editData((draft) => newData.forEach((d) => (draft[d.index] ||= d.data)))
+      editData((draft) =>
+        newData.forEach((d) => (draft.data[d.index] ||= d.data)),
+      )
     })
 
     return () => ws.close()
   }, [])
+
+  useEffect(
+    () =>
+      void (async () => {
+        const info = (await (await fetch('/v0/info')).json()) as IpcManInfo
+        editData((draft) => (draft.info = info))
+      })(),
+    [],
+  )
 
   return <RemoteContext.Provider value={data} children={children} />
 }
