@@ -54,7 +54,7 @@ export const TimelineTable: FC<{
 
   const rowVirtualizer = useVirtualizer({
     count: rows.length,
-    estimateSize: () => 33, // Estimate row height for accurate scrollbar dragging
+    estimateSize: () => 42, // Estimate row height for accurate scrollbar dragging
     getScrollElement: () => tableContainerRef.current,
     // Measure dynamic row height, except in firefox because it measures table border height incorrectly
     measureElement:
