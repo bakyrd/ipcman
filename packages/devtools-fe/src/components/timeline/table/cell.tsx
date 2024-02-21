@@ -22,6 +22,14 @@ export const TextCell: FC<{
   )
 }
 
+export const HeaderCell: FC<{
+  children: string
+}> = ({ children }) => (
+  <Stack className={styles.headerCellContainer!}>
+    <div className={styles.headerCell} children={children} />
+  </Stack>
+)
+
 export const IndexCell: FC<{
   index: number
   timestamp: number

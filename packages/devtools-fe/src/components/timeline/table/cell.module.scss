@@ -54,6 +54,12 @@
   }
 }
 
+.headerCell {
+  &Container {
+    @extend .containerBase;
+  }
+}
+
 .indexCell {
   align-items: center;
 

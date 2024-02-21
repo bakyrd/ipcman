@@ -11,7 +11,7 @@ import type { Dispatch, FC, SetStateAction } from 'react'
 import { useRef } from 'react'
 import type { IpcManItem } from '../../../services/remote'
 import { useRemote } from '../../../services/remote'
-import { IndexCell, TextCell, TypeCell } from './cell'
+import { HeaderCell, IndexCell, TextCell, TypeCell } from './cell'
 import styles from './index.module.scss'
 
 const columnHelper = createColumnHelper<IpcManItem>()
@@ -25,7 +25,7 @@ const columns = [
   // }),
   columnHelper.accessor((x) => [x.index, x.timestamp], {
     id: 'indexcol',
-    header: 'Index',
+    header: () => <HeaderCell children="Index" />,
     size: 72,
     enableResizing: false,
     cell: (info) => {
@@ -34,20 +34,20 @@ const columns = [
     },
   }),
   columnHelper.accessor('data.type', {
-    header: 'Type',
+    header: () => <HeaderCell children="Type" />,
     size: 48,
     enableResizing: false,
     cell: (info) => <TypeCell type={info.getValue()} />,
   }),
   columnHelper.accessor('data.channel', {
-    header: 'Channel',
+    header: () => <HeaderCell children="Channel" />,
     cell: (info) => <TextCell children={info.getValue()} />,
   }),
   columnHelper.accessor(
     (x) => (x.data.requestArgs ? JSON.stringify(x.data.requestArgs) : ''),
     {
       id: 'requestArgs',
-      header: 'Request',
+      header: () => <HeaderCell children="Request" />,
       cell: (info) => <TextCell children={info.getValue()} />,
     },
   ),
@@ -55,7 +55,7 @@ const columns = [
     (x) => (x.data.responseArgs ? JSON.stringify(x.data.responseArgs) : ''),
     {
       id: 'responseArgs',
-      header: 'Response',
+      header: () => <HeaderCell children="Response" />,
       cell: (info) => <TextCell children={info.getValue()} />,
     },
   ),
