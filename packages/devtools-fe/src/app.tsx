@@ -4,6 +4,7 @@ import { ThemeProvider } from '@fluentui/react'
 import type { FC } from 'react'
 import styles from './app.module.scss'
 import { Root } from './components/root'
+import { RemoteProvider } from './services/remote'
 
 const defaultFontStyle: IRawStyle = {
   fontFamily:
@@ -41,6 +42,8 @@ const appDarkTheme: PartialTheme = {
 
 export const App: FC = () => (
   <ThemeProvider className={styles.themeProvider} theme={appDarkTheme}>
-    <Root />
+    <RemoteProvider>
+      <Root />
+    </RemoteProvider>
   </ThemeProvider>
 )
