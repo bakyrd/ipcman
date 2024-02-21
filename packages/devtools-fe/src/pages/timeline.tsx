@@ -20,13 +20,13 @@ export const TimelinePage: FC = () => {
 
   return (
     <Stack className={styles.timelinePageContainer!} horizontal grow>
-      <Stack className={styles.tableContainer!} grow={2}>
+      <Stack className={styles.tableContainer!}>
         <TimelineTable
           rowSelection={rowSelection}
           handleRowSelection={setRowSelection}
         />
       </Stack>
-      <Stack className={styles.inspectorContainer!} grow={1}>
+      <Stack className={styles.inspectorContainer!}>
         <TimelineInspector item={selected} />
       </Stack>
     </Stack>
