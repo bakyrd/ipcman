@@ -9,7 +9,13 @@ import type { IpcManItem } from '../../services/remote'
 
 const columnHelper = createColumnHelper<IpcManItem>()
 
-const columns = [columnHelper.accessor('index', {})]
+const columns = [
+  columnHelper.accessor('index', {}),
+  columnHelper.accessor('data.type', {}),
+  columnHelper.accessor('data.channel', {}),
+  columnHelper.accessor('data.requestArgs', {}),
+  columnHelper.accessor('data.responseArgs', {}),
+]
 
 export const TimelineTable: FC<{
   items: IpcManItem[]
