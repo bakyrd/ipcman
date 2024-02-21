@@ -2328,6 +2328,7 @@ __metadata:
     "@craco/types": "npm:^7.1.0"
     "@fluentui/fluent2-theme": "npm:^8.105.1"
     "@fluentui/react": "npm:^8.106.4"
+    "@tanstack/react-table": "npm:^8.12.0"
     ahooks: "npm:^3.7.5"
     immer: "npm:^9.0.19"
     react: "npm:18.2.0"
@@ -3398,6 +3399,25 @@ __metadata:
   dependencies:
     defer-to-connect: "npm:^2.0.0"
   checksum: 10c0/73946918c025339db68b09abd91fa3001e87fc749c619d2e9c2003a663039d4c3cb89836c98a96598b3d47dec2481284ba85355392644911f5ecd2336536697f
+  languageName: node
+  linkType: hard
+
+"@tanstack/react-table@npm:^8.12.0":
+  version: 8.12.0
+  resolution: "@tanstack/react-table@npm:8.12.0"
+  dependencies:
+    "@tanstack/table-core": "npm:8.12.0"
+  peerDependencies:
+    react: ">=16"
+    react-dom: ">=16"
+  checksum: 10c0/9692fcb23779cc457f74c395b1f79dc700eae246315014879c3a312275a11c8e49fd14a16a122843b8eb14f6f1b71c8fb648ba7fec300806be6d589d7c902c21
+  languageName: node
+  linkType: hard
+
+"@tanstack/table-core@npm:8.12.0":
+  version: 8.12.0
+  resolution: "@tanstack/table-core@npm:8.12.0"
+  checksum: 10c0/3300b37dc73e8959718d73ad7a981c5c8e1561c7b1f4ee6c86f056be49d2d20571808cacfc281801b2eb8fb9ead93165a71f933bc209e939d2ca4bd6556bc0a5
   languageName: node
   linkType: hard
 

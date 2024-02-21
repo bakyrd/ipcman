@@ -5,20 +5,6 @@ import { useState } from 'react'
 import { useRemote } from '../services/remote'
 import styles from './titlebar.module.scss'
 
-const Timer: FC = () => {
-  const { info } = useRemote()
-
-  const [now, setNow] = useState(() => new Date().getTime())
-
-  useInterval(() => setNow(new Date().getTime()), 400)
-
-  return (
-    <Stack>
-      <Text>+{Math.floor((now - info.startTime) / 1000)}</Text>
-    </Stack>
-  )
-}
-
 export const TitleBar: FC = () => {
   return (
     <Stack
@@ -39,6 +25,20 @@ export const TitleBar: FC = () => {
       <Stack horizontal horizontalAlign="end">
         <Timer />
       </Stack>
+    </Stack>
+  )
+}
+
+const Timer: FC = () => {
+  const { info } = useRemote()
+
+  const [now, setNow] = useState(() => new Date().getTime())
+
+  useInterval(() => setNow(new Date().getTime()), 400)
+
+  return (
+    <Stack>
+      <Text>+{Math.floor((now - info.startTime) / 1000)}</Text>
     </Stack>
   )
 }

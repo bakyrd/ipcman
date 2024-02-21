@@ -10,7 +10,10 @@ export interface IpcManInfo {
 export interface IpcManItem {
   index: number
   timestamp: number
-  data: IpcManData
+  data: IpcManData & {
+    requestArgs?: unknown[]
+    responseArgs?: unknown[]
+  }
 }
 
 export interface RemoteIntl {

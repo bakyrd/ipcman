@@ -20,6 +20,7 @@
     "@craco/types": "^7.1.0",
     "@fluentui/fluent2-theme": "^8.105.1",
     "@fluentui/react": "^8.106.4",
+    "@tanstack/react-table": "^8.12.0",
     "ahooks": "^3.7.5",
     "immer": "^9.0.19",
     "react": "18.2.0",
