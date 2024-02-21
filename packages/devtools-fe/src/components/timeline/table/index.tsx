@@ -1,4 +1,4 @@
-import type { Row } from '@tanstack/react-table'
+import type { Row, RowSelectionState } from '@tanstack/react-table'
 import {
   createColumnHelper,
   flexRender,
@@ -7,9 +7,10 @@ import {
 } from '@tanstack/react-table'
 import { useVirtualizer } from '@tanstack/react-virtual'
 import { clsx } from 'clsx/lite'
-import type { FC } from 'react'
+import type { Dispatch, FC, SetStateAction } from 'react'
 import { useRef } from 'react'
 import type { IpcManItem } from '../../../services/remote'
+import { useRemote } from '../../../services/remote'
 import { ipcManDataTypeMap } from './consts'
 import styles from './index.module.scss'
 
@@ -36,16 +37,30 @@ const columns = [
 ]
 
 export const TimelineTable: FC<{
-  items: IpcManItem[]
-}> = ({ items }) => {
+  rowSelection: RowSelectionState
+  handleRowSelection: Dispatch<SetStateAction<RowSelectionState>>
+}> = ({ rowSelection, handleRowSelection }) => {
+  const { data } = useRemote()
+
   const table = useReactTable({
     columns,
-    data: items,
+    data,
 
     getCoreRowModel: getCoreRowModel(),
 
     enableColumnResizing: true,
     columnResizeMode: 'onChange',
+
+    getRowId: (row) => `${row.index}`,
+
+    state: {
+      rowSelection,
+    },
+
+    enableRowSelection: true,
+    enableMultiRowSelection: false,
+    enableSubRowSelection: false,
+    onRowSelectionChange: handleRowSelection,
   })
 
   const { rows } = table.getRowModel()
@@ -116,13 +131,17 @@ export const TimelineTable: FC<{
               const row = rows[virtualRow.index] as Row<IpcManItem>
               return (
                 <tr
-                  className={styles.tRow}
+                  className={clsx(
+                    styles.tRow,
+                    row.getIsSelected() && 'selected',
+                  )}
                   data-index={virtualRow.index} // Needed for dynamic row height measurement
                   ref={(node) => rowVirtualizer.measureElement(node)} // Measure dynamic row height
                   key={row.id}
                   style={{
                     transform: `translateY(${virtualRow.start}px)`, // This should always be a `style` as it changes on scroll
                   }}
+                  onClick={row.getToggleSelectedHandler()}
                 >
                   {row.getVisibleCells().map((cell) => {
                     return (

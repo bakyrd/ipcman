@@ -2,6 +2,11 @@ import { Spinner, SpinnerSize, Stack } from '@fluentui/react'
 import { Editor } from '@monaco-editor/react'
 import type { FC } from 'react'
 
+const options = {
+  domReadOnly: true,
+  readOnly: true,
+}
+
 const loading = (
   <Spinner
     label="Loading..."
@@ -11,10 +16,19 @@ const loading = (
   />
 )
 
-export const CodeInspector: FC = () => {
+export const CodeInspector: FC<{
+  value: string
+}> = ({ value }) => {
   return (
-    <Stack>
-      <Editor loading={loading} theme="dark" language="json" value="[]" />
+    <Stack grow>
+      <Editor
+        height="100%"
+        options={options}
+        loading={loading}
+        theme="dark"
+        language="json"
+        value={value}
+      />
     </Stack>
   )
 }
