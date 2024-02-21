@@ -69,7 +69,7 @@ export const ipcManDevtools = async (config: IpcManDevtoolsConfig) => {
     })
     pushHandlers.push(fn)
 
-    ws.send(items)
+    ws.send(JSON.stringify(items))
   })
 
   app
