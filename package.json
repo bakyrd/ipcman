@@ -8,7 +8,7 @@
   ],
   "scripts": {
     "clean": "ts-node -T scripts/clean.cts",
-    "build": "concurrently -n core,fe \"yarn workspace ipcman build\" \"yarn workspace @ipcman/devtools-fe build\" && yarn workspace @ipcman/devtools build"
+    "build": "yarn workspace ipcman build && concurrently -n devtools,fe \"yarn workspace @ipcman/devtools build\" \"yarn workspace @ipcman/devtools-fe build\""
   },
   "devDependencies": {
     "@tsconfig/strictest": "^2.0.3",
