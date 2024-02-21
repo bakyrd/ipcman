@@ -8,11 +8,11 @@ export const TimelinePage: FC = () => {
   const remote = useRemote()
 
   return (
-    <Stack horizontal>
-      <Stack className={styles.tableContainer!} grow>
+    <Stack className={styles.timelinePageContainer!} horizontal>
+      <Stack className={styles.tableContainer!} grow={2}>
         <TimelineTable items={remote.data} />
       </Stack>
-      <Stack />
+      <Stack className={styles.inspectorContainer!} grow={1} />
     </Stack>
   )
 }
