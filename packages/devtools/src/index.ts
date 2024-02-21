@@ -14,11 +14,14 @@ export interface IpcManDevtoolsConfig extends Omit<IpcManConfig, 'handler'> {}
 
 interface Item {
   index: number
+  timestamp: number
   data: IpcManData
 }
 
 export const ipcManDevtools = async (config: IpcManDevtoolsConfig) => {
   const parsedConfig = Object.assign({}, config)
+
+  const startTime = new Date().getTime()
 
   let i = 0
   const items: Item[] = []
@@ -29,6 +32,7 @@ export const ipcManDevtools = async (config: IpcManDevtoolsConfig) => {
     const index = i++
     const item = {
       index,
+      timestamp: new Date().getTime(),
       data,
     }
     items.push(item)
@@ -43,6 +47,12 @@ export const ipcManDevtools = async (config: IpcManDevtoolsConfig) => {
   const app = new Koa()
   const router = new Router({
     prefix: '/v0',
+  })
+
+  router.post('/info', (ctx) => {
+    ctx.body = {
+      startTime,
+    }
   })
 
   router.post('/get', (ctx) => {
