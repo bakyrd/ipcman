@@ -17,12 +17,12 @@ import styles from './index.module.scss'
 const columnHelper = createColumnHelper<IpcManItem>()
 
 const columns = [
-  columnHelper.display({
-    id: 'xref',
-    header: '',
-    size: 48,
-    enableResizing: false,
-  }),
+  // columnHelper.display({
+  //   id: 'xref',
+  //   header: '',
+  //   size: 48,
+  //   enableResizing: false,
+  // }),
   columnHelper.accessor((x) => [x.index, x.timestamp], {
     id: 'indexcol',
     header: 'Index',
