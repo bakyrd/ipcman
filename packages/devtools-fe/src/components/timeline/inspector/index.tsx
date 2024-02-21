@@ -1,16 +1,39 @@
-import { Pivot, PivotItem } from '@fluentui/react'
+import { Pivot, PivotItem, Stack } from '@fluentui/react'
 import type { FC } from 'react'
+import { useCallback, useState } from 'react'
 import { CodeInspector } from './code'
 
+type Tab = 'request' | 'response'
+
 export const TimelineInspector: FC = () => {
+  const [tab, setTab] = useState<Tab>('request')
+
+  const handleTabClick = useCallback((item?: PivotItem) => {
+    if (item) setTab(item.props.itemKey! as Tab)
+  }, [])
+
   return (
-    <Pivot overflowBehavior="menu" overflowAriaLabel="More Inspector Tools">
-      <PivotItem headerText="Request" itemIcon="Installation">
-        <CodeInspector />
-      </PivotItem>
-      <PivotItem headerText="Response" itemIcon="PublishContent">
-        <CodeInspector />
-      </PivotItem>
-    </Pivot>
+    <Stack>
+      <Stack>
+        <Pivot
+          overflowBehavior="menu"
+          overflowAriaLabel="More Inspector Tools"
+          selectedKey={tab}
+          onLinkClick={handleTabClick}
+        >
+          <PivotItem
+            headerText="Request"
+            itemIcon="Installation"
+            itemKey="request"
+          />
+          <PivotItem
+            headerText="Response"
+            itemIcon="PublishContent"
+            itemKey="response"
+          />
+        </Pivot>
+      </Stack>
+      <CodeInspector />
+    </Stack>
   )
 }

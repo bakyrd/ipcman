@@ -20,6 +20,7 @@
     "@craco/types": "^7.1.0",
     "@fluentui/fluent2-theme": "^8.105.1",
     "@fluentui/react": "^8.106.4",
+    "@monaco-editor/react": "^4.6.0",
     "@tanstack/react-table": "^8.12.0",
     "@tanstack/react-virtual": "^3.1.2",
     "ahooks": "^3.7.5",
