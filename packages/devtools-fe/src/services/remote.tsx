@@ -49,7 +49,7 @@ export const RemoteProvider: FC<{
       }[]
 
       editData((draft) =>
-        newData.forEach((d) => (draft.data[d.index] ||= d.data)),
+        newData.forEach((d) => void (draft.data[d.index] ||= d.data)),
       )
     })
 
@@ -60,7 +60,7 @@ export const RemoteProvider: FC<{
     () =>
       void (async () => {
         const info = (await (await fetch('/v0/info')).json()) as IpcManInfo
-        editData((draft) => (draft.info = info))
+        editData((draft) => void (draft.info = info))
       })(),
     [],
   )
