@@ -54,12 +54,60 @@ export const RemoteProvider: FC<{
     ws.addEventListener('message', (e) => {
       const newData = JSON.parse(e.data as string) as IpcManItem[]
 
-      editData((draft) =>
-        newData.forEach((d) => {
-          if (draft.data.findIndex((x) => x.index === d.index) === -1)
-            draft.data.push(d)
-        }),
-      )
+      // Must loop twice because immer frozens newData.
+      newData.forEach((d) => {
+        switch (d.data.type) {
+          case 'event':
+            d.data.responseArgs = d.data.args
+            break
+
+          case 'request':
+            d.data.requestArgs = d.data.args
+            break
+
+          case 'handle-request':
+            d.data.requestArgs = d.data.args
+            break
+
+          case 'handle-response':
+            d.data.responseArgs = d.data.args
+            break
+
+          case 'wrapped-request':
+            d.data.requestArgs = d.data.args
+            break
+
+          case 'wrapped-response':
+            d.data.responseArgs = d.data.args
+            break
+        }
+      })
+
+      editData((draft) => {
+        newData.forEach((d) => draft.data.push(d))
+
+        draft.data.forEach((x) => {
+          if (x.data.responseArgs) return
+          if (
+            x.data.type !== 'handle-request' &&
+            x.data.type !== 'wrapped-request'
+          )
+            return
+          // if (!x.data.id) return
+
+          const rType = x.data.type.replace('request', 'response') as
+            | 'handle-response'
+            | 'wrapped-response'
+
+          const r = newData.find((y) => y.data.type === rType)
+          if (r) {
+            // x.data.requestArgs = x.data.args
+            x.data.responseArgs = r.data.args
+            r.data.requestArgs = x.data.args
+            // r.data.responseArgs = r.data.args
+          }
+        })
+      })
     })
 
     return () => ws.close()
