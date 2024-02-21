@@ -28,7 +28,7 @@ export const RemoteProvider: FC<{
     )
 
     ws.addEventListener('message', (e) => {
-      const newData = e.data as {
+      const newData = JSON.parse(e.data as string) as {
         index: number
         data: IpcManData
       }[]
