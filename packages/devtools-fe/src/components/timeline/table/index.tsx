@@ -95,6 +95,7 @@ export const TimelineTable: FC<{
                             styles.resizer,
                             header.column.getIsResizing() && styles.isResizing,
                           )}
+                          onDoubleClick={() => header.column.resetSize()}
                           onMouseDown={header.getResizeHandler()}
                           onTouchStart={header.getResizeHandler()}
                         ></div>
