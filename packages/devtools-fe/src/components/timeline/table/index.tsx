@@ -16,22 +16,48 @@ import styles from './index.module.scss'
 
 const columnHelper = createColumnHelper<IpcManItem>()
 
+const TextCell: FC<{
+  children: string
+}> = ({ children }) => {
+  return <div className={styles.textCell} children={children} />
+}
+
 const columns = [
-  columnHelper.accessor('index', {}),
+  columnHelper.display({
+    id: 'xref',
+    header: '',
+    size: 48,
+    enableResizing: false,
+  }),
+  columnHelper.accessor('index', {
+    header: 'Index',
+    size: 48,
+    enableResizing: false,
+  }),
   columnHelper.accessor('data.type', {
+    header: 'Type',
+    size: 48,
+    enableResizing: false,
     cell: (info) => ipcManDataTypeMap[info.getValue()].name,
   }),
-  columnHelper.accessor('data.channel', {}),
+  columnHelper.accessor('data.channel', {
+    header: 'Channel',
+    cell: (info) => <TextCell children={info.getValue()} />,
+  }),
   columnHelper.accessor(
     (x) => (x.data.requestArgs ? JSON.stringify(x.data.requestArgs) : ''),
     {
+      header: 'Request',
       id: 'requestArgs',
+      cell: (info) => <TextCell children={info.getValue()} />,
     },
   ),
   columnHelper.accessor(
     (x) => (x.data.responseArgs ? JSON.stringify(x.data.responseArgs) : ''),
     {
+      header: 'Response',
       id: 'responseArgs',
+      cell: (info) => <TextCell children={info.getValue()} />,
     },
   ),
 ]

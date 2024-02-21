@@ -7,8 +7,10 @@
 }
 
 .table {
-  word-break: break-all;
-  overflow-wrap: anywhere;
+  // word-break: break-all;
+  // overflow-wrap: anywhere;
+  // word-break: keep-all;
+  white-space: nowrap;
 
   display: grid;
 }
@@ -20,7 +22,13 @@
   z-index: 1;
 }
 
+.tRowBase {
+  height: 48px;
+}
+
 .tHeadRow {
+  @extend .tRowBase;
+
   display: flex;
   width: 100%;
 }
@@ -36,12 +44,14 @@
 }
 
 .tRow {
+  @extend .tRowBase;
+
   display: flex;
   position: absolute;
   width: 100%;
 
   &.selected {
-    background-color: red;
+    height: 80px;
   }
 }
 
@@ -64,4 +74,9 @@
   &.isResizing {
     opacity: 1;
   }
+}
+
+.textCell {
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
