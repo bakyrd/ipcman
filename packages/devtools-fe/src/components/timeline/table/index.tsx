@@ -7,6 +7,7 @@ import {
 } from '@tanstack/react-table'
 import { useVirtualizer } from '@tanstack/react-virtual'
 import { clsx } from 'clsx/lite'
+import type { IpcManBindData } from 'ipcman'
 import type { Dispatch, FC, SetStateAction } from 'react'
 import { useRef } from 'react'
 import type { IpcManItem } from '../../../services/remote'
@@ -39,6 +40,14 @@ const columns = [
     enableResizing: false,
     cell: (info) => <TypeCell type={info.getValue()} />,
   }),
+  columnHelper.accessor(
+    (x) => ((x.data as IpcManBindData).id ? (x.data as IpcManBindData).id : ''),
+    {
+      id: 'id',
+      header: () => <HeaderCell children="ID" />,
+      cell: (info) => <TextCell children={info.getValue()} />,
+    },
+  ),
   columnHelper.accessor('data.channel', {
     header: () => <HeaderCell children="Channel" />,
     cell: (info) => <TextCell children={info.getValue()} />,
