@@ -49,7 +49,7 @@ const columns = [
     },
   ),
   columnHelper.accessor('data.channel', {
-    header: () => <HeaderCell children="Channel" />,
+    header: () => <HeaderCell children="Channel / Method" />,
     cell: (info) => <TextCell children={info.getValue()} />,
   }),
   columnHelper.accessor(
