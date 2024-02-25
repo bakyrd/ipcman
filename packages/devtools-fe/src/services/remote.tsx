@@ -107,8 +107,9 @@ export const RemoteProvider: FC<{
 
           // const r = newData.find((y) => y.data.type === rType)
 
-          const r = newData.find(
+          const r = draft.data.find(
             (y) =>
+              y !== x &&
               (x.data as IpcManBindData).id === (y.data as IpcManBindData).id,
           )
 
