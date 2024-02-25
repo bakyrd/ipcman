@@ -24,7 +24,7 @@ export const ipcManDevtools = async (config: IpcManDevtoolsConfig) => {
 
   const startTime = new Date().getTime()
 
-  let i = 0
+  let i = 1
   const items: Item[] = []
 
   const pushHandlers: ((raw: string) => void)[] = []
