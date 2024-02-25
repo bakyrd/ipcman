@@ -1,4 +1,4 @@
-import { freeze } from 'immer'
+import { freeze, original } from 'immer'
 import type { IpcManBindData, IpcManData } from 'ipcman'
 import type { FC, ReactNode } from 'react'
 import { createContext, useContext, useEffect } from 'react'
@@ -56,7 +56,11 @@ export const RemoteProvider: FC<{
       const newData = JSON.parse(e.data as string) as IpcManItem[]
 
       editData((draft) => {
-        newData.forEach((d) => {
+        const originalList = original(draft)!.data.map((x) => x.index)
+
+        for (const d of newData) {
+          if (originalList.findIndex((x) => d.index === x) !== -1) continue
+
           switch (d.data.type) {
             case 'event':
               d.data.responseArgs = d.data.args
@@ -86,7 +90,7 @@ export const RemoteProvider: FC<{
           freeze(d)
 
           draft.data.push(d)
-        })
+        }
 
         draft.data.forEach((x) => {
           if (x.data.responseArgs) return
