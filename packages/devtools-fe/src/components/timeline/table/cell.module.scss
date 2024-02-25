@@ -2,7 +2,7 @@
   text-overflow: ellipsis;
   overflow: hidden;
 
-  margin: 3px;
+  margin: 3px 6px;
 
   &Container {
     overflow: hidden;
@@ -10,8 +10,12 @@
     flex-grow: 1;
     background: #1d1d1d;
 
+    display: flex;
+    align-items: center;
+
     &Empty {
-      background: black;
+      flex-grow: 1;
+      background: #141414;
     }
   }
 }

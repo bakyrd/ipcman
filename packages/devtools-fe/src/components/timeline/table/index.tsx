@@ -45,11 +45,13 @@ const columns = [
     (x) => ((x.data as IpcManBindData).id ? (x.data as IpcManBindData).id : ''),
     {
       id: 'id',
+      size: 160,
       header: () => <HeaderCell children="ID" />,
       cell: (info) => <TextCell children={info.getValue()} />,
     },
   ),
   columnHelper.accessor('data.channel', {
+    size: 160,
     header: () => <HeaderCell children="Channel / Method" />,
     cell: (info) => <TextCell children={info.getValue()} />,
   }),
@@ -57,6 +59,7 @@ const columns = [
     (x) => (x.data.requestArgs ? JSON.stringify(x.data.requestArgs) : ''),
     {
       id: 'requestArgs',
+      size: 320,
       header: () => <HeaderCell children="Request" />,
       cell: (info) => <TextCell children={info.getValue()} />,
     },
@@ -65,6 +68,7 @@ const columns = [
     (x) => (x.data.responseArgs ? JSON.stringify(x.data.responseArgs) : ''),
     {
       id: 'responseArgs',
+      size: 320,
       header: () => <HeaderCell children="Response" />,
       cell: (info) => <TextCell children={info.getValue()} />,
     },
@@ -199,7 +203,7 @@ export const TimelineTable: FC<{
 
     return (
       <tr
-        className={clsx(styles.tRow, row.getIsSelected() && 'selected')}
+        className={clsx(styles.tRow, row.getIsSelected() && styles.selected)}
         data-index={virtualRow.index} // Needed for dynamic row height measurement
         ref={(node) => rowVirtualizer.measureElement(node)} // Measure dynamic row height
         key={row.id}
