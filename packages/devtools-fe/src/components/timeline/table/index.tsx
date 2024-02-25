@@ -137,7 +137,7 @@ export const TimelineTable: FC<{
     //     smoothScroll: true,
     //   })
 
-    if (tableContainerRef.current)
+    if (autoScroll && tableContainerRef.current)
       tableContainerRef.current.scrollTop =
         tableContainerRef.current.scrollHeight
   }, [data, autoScroll, rowVirtualizer])
