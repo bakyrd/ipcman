@@ -21,7 +21,8 @@ const loading = (
 
 export const CodeInspector: FC<{
   value: string
-}> = ({ value }) => {
+  folding: boolean
+}> = ({ value, folding }) => {
   const editorRef = useRef<editor.IStandaloneCodeEditor | null>(null)
 
   const handleEditorDidMount: OnMount = (editor, _monaco) => {
@@ -29,8 +30,14 @@ export const CodeInspector: FC<{
   }
 
   useEffect(() => {
-    void editorRef.current?.getAction('editor.foldRecursively')?.run()
-  }, [value])
+    editorRef.current?.setPosition({
+      lineNumber: 1,
+      column: 1,
+    })
+    if (folding)
+      void editorRef.current?.getAction('editor.foldRecursively')?.run()
+    else void editorRef.current?.getAction('editor.unfoldAll')?.run()
+  }, [value, folding])
 
   return (
     <Stack grow>
