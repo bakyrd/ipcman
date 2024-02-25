@@ -10,7 +10,7 @@ import { useVirtualizer } from '@tanstack/react-virtual'
 import { clsx } from 'clsx/lite'
 import type { IpcManBindData } from 'ipcman'
 import type { Dispatch, FC, MouseEvent, SetStateAction } from 'react'
-import { useCallback, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import type { IpcManItem } from '../../../services/remote'
 import { useRemote } from '../../../services/remote'
 import { HeaderCell, IndexCell, TextCell, TypeCell } from './cell'
@@ -123,10 +123,24 @@ export const TimelineTable: FC<{
     //     ? (element) => element?.getBoundingClientRect().height
     //     : (undefined as unknown as () => number),
 
-    measureElement: () => 48,
+    // measureElement: () => 48,
 
     overscan: 5,
   })
+
+  useEffect(() => {
+    // if (data.length && autoScroll)
+    //   rowVirtualizer.scrollToIndex(data.length, {
+    //     align: 'end',
+
+    //     // @ts-expect-error Tanstack Type Err
+    //     smoothScroll: true,
+    //   })
+
+    if (tableContainerRef.current)
+      tableContainerRef.current.scrollTop =
+        tableContainerRef.current.scrollHeight
+  }, [data, autoScroll, rowVirtualizer])
 
   const headerNodes = table.getHeaderGroups().map((headerGroup) => {
     const headerCellNodes = headerGroup.headers.map((header) => {
@@ -229,7 +243,7 @@ export const TimelineTable: FC<{
           />
         </Stack>
       </Stack>
-      {tableNodes}
+      <Stack grow children={tableNodes} />
     </Stack>
   )
 }
