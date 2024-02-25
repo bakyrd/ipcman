@@ -231,6 +231,7 @@ export const TimelineTable: FC<{
   return (
     <Stack grow>
       <Stack className={styles.header!} horizontal>
+        <Stack horizontalAlign="start" grow />
         <Stack horizontalAlign="end" verticalAlign="center">
           <Toggle
             className={styles.toggle}
