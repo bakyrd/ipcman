@@ -48,7 +48,7 @@ export const TimelineInspector: FC<{
 
   return (
     <Stack grow>
-      <Stack horizontal>
+      <Stack className={styles.header!} horizontal>
         <Stack horizontalAlign="stretch" grow>
           <Pivot
             overflowBehavior="menu"

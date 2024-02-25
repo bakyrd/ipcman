@@ -1,3 +1,13 @@
+.header {
+  height: 48px;
+}
+
+.toggle {
+  margin: 0 12px;
+
+  min-width: 150px;
+}
+
 .overflowContainer {
   overflow: auto; // Our scrollable table container
   position: relative; // Needed for sticky header
