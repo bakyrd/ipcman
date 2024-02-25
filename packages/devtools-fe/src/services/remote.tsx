@@ -1,4 +1,5 @@
-import type { IpcManData } from 'ipcman'
+import { freeze } from 'immer'
+import type { IpcManBindData, IpcManData } from 'ipcman'
 import type { FC, ReactNode } from 'react'
 import { createContext, useContext, useEffect } from 'react'
 import { useImmer } from 'use-immer'
@@ -54,37 +55,38 @@ export const RemoteProvider: FC<{
     ws.addEventListener('message', (e) => {
       const newData = JSON.parse(e.data as string) as IpcManItem[]
 
-      // Must loop twice because immer frozens newData.
-      newData.forEach((d) => {
-        switch (d.data.type) {
-          case 'event':
-            d.data.responseArgs = d.data.args
-            break
-
-          case 'request':
-            d.data.requestArgs = d.data.args
-            break
-
-          case 'handle-request':
-            d.data.requestArgs = d.data.args
-            break
-
-          case 'handle-response':
-            d.data.responseArgs = d.data.args
-            break
-
-          case 'wrapped-request':
-            d.data.requestArgs = d.data.args
-            break
-
-          case 'wrapped-response':
-            d.data.responseArgs = d.data.args
-            break
-        }
-      })
-
       editData((draft) => {
-        newData.forEach((d) => draft.data.push(d))
+        newData.forEach((d) => {
+          switch (d.data.type) {
+            case 'event':
+              d.data.responseArgs = d.data.args
+              break
+
+            case 'request':
+              d.data.requestArgs = d.data.args
+              break
+
+            case 'handle-request':
+              d.data.requestArgs = d.data.args
+              break
+
+            case 'handle-response':
+              d.data.responseArgs = d.data.args
+              break
+
+            case 'wrapped-request':
+              d.data.requestArgs = d.data.args
+              break
+
+            case 'wrapped-response':
+              d.data.responseArgs = d.data.args
+              break
+          }
+
+          freeze(d)
+
+          draft.data.push(d)
+        })
 
         draft.data.forEach((x) => {
           if (x.data.responseArgs) return
@@ -95,11 +97,17 @@ export const RemoteProvider: FC<{
             return
           // if (!x.data.id) return
 
-          const rType = x.data.type.replace('request', 'response') as
-            | 'handle-response'
-            | 'wrapped-response'
+          // const rType = x.data.type.replace('request', 'response') as
+          //   | 'handle-response'
+          //   | 'wrapped-response'
 
-          const r = newData.find((y) => y.data.type === rType)
+          // const r = newData.find((y) => y.data.type === rType)
+
+          const r = newData.find(
+            (y) =>
+              (x.data as IpcManBindData).id === (y.data as IpcManBindData).id,
+          )
+
           if (r) {
             // x.data.requestArgs = x.data.args
             x.data.responseArgs = r.data.args
