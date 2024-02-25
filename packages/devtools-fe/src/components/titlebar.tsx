@@ -1,8 +1,6 @@
-import { Pivot, PivotItem, Stack, Text } from '@fluentui/react'
-import { useInterval } from 'ahooks'
+import { Pivot, PivotItem, Stack } from '@fluentui/react'
 import type { FC } from 'react'
-import { useState } from 'react'
-import { useRemote } from '../services/remote'
+import { Timer } from './timer'
 import styles from './titlebar.module.scss'
 
 export const TitleBar: FC = () => {
@@ -25,20 +23,6 @@ export const TitleBar: FC = () => {
       <Stack horizontal horizontalAlign="end">
         <Timer />
       </Stack>
-    </Stack>
-  )
-}
-
-const Timer: FC = () => {
-  const { info } = useRemote()
-
-  const [now, setNow] = useState(() => new Date().getTime())
-
-  useInterval(() => setNow(new Date().getTime()), 400)
-
-  return (
-    <Stack>
-      <Text>+{Math.floor((now - info.startTime) / 1000)}</Text>
     </Stack>
   )
 }
