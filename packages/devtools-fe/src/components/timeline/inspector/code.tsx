@@ -3,7 +3,7 @@ import type { OnMount } from '@monaco-editor/react'
 import { Editor } from '@monaco-editor/react'
 import type { editor } from 'monaco-editor'
 import type { FC } from 'react'
-import { useRef } from 'react'
+import { useEffect, useRef } from 'react'
 
 const options: editor.IStandaloneEditorConstructionOptions = {
   domReadOnly: true,
@@ -27,6 +27,10 @@ export const CodeInspector: FC<{
   const handleEditorDidMount: OnMount = (editor, _monaco) => {
     editorRef.current = editor
   }
+
+  useEffect(() => {
+    void editorRef.current?.getAction('editor.foldRecursively')?.run()
+  }, [value])
 
   return (
     <Stack grow>
