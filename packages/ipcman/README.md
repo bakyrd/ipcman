@@ -3,6 +3,8 @@
 <h1>IpcMan</h1>
 <p>Electron IPC Hook/Devtools</p>
 
+[![NPM Version](https://img.shields.io/npm/v/ipcman?style=flat-square)](https://www.npmjs.com/package/ipcman)
+[![npm package minimized gzipped size](https://img.shields.io/bundlejs/size/ipcman?style=flat-square)](https://www.npmjs.com/package/ipcman)
 [![License](https://img.shields.io/github/license/ilharp/ipcman?style=flat-square)](https://github.com/ilharp/ipcman/blob/master/LICENSE)
 </div>
 
