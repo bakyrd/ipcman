@@ -37,7 +37,7 @@ jobs:
       - uses: actions/upload-artifact@v3
         with:
           name: ipcman-${{ github.sha }}
-          path: ipcman.tgz
+          path: packages/ipcman/ipcman.tgz
 
       - uses: actions/upload-artifact@v3
         with:
