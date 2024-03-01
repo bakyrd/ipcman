@@ -58,6 +58,15 @@ Finally, directly run the app. Once the app starts, head to <http://127.0.0.1/90
 
 ## `ipcman` Reference
 
+### Events
+
+Event|Description
+--|--
+send|Emits before sending a message to frontend.
+receive|Emits before receiving a message from frontend.
+invoke|Emits before invoking the real registered function.
+
+
 ### Function `ipcMan: <IpcArgs extends unknown[] = unknown[]>(config: IpcManConfig<IpcArgs>) => IpcManContext`
 
 The `ipcMan()` function.
