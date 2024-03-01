@@ -92,13 +92,17 @@ export const ipcManDevtools = async (config: IpcManDevtoolsConfig) => {
     ws.send(JSON.stringify(items))
   })
 
-  const DEVTOOLS_BUILD_PATH = 
-    process.env.DEVTOOLS_BUILD_PATH ||
-    join(__dirname, 'build')
+  const DEVTOOLS_BUILD_PATH =
+    process.env.DEVTOOLS_BUILD_PATH || join(__dirname, 'build')
 
   // Check if build folder exists
-  if (!existsSync(DEVTOOLS_BUILD_PATH) || !existsSync(join(DEVTOOLS_BUILD_PATH, 'index.html')))
-    throw new Error(`ipcman: Frontend build does not exist, should be placed in ${DEVTOOLS_BUILD_PATH}`)
+  if (
+    !existsSync(DEVTOOLS_BUILD_PATH) ||
+    !existsSync(join(DEVTOOLS_BUILD_PATH, 'index.html'))
+  )
+    throw new Error(
+      `ipcman: Frontend build does not exist, should be placed in ${DEVTOOLS_BUILD_PATH}`,
+    )
 
   app
 
