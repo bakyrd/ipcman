@@ -1,6 +1,6 @@
 {
   "name": "ipcman",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Electron IPC Hook/Devtools",
   "repository": "https://github.com/ilharp/ipcman.git",
   "author": {
