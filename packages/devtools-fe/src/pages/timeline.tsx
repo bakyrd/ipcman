@@ -14,7 +14,7 @@ export const TimelinePage: FC = () => {
 
   const selected = useMemo(() => {
     const [key] = Object.keys(rowSelection)
-    if (key) return data[Number(key)]
+    if (key) return data.find((x) => x.index === Number(key))
     return undefined
   }, [rowSelection, data])
 
