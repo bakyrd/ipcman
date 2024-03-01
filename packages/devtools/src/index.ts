@@ -12,7 +12,10 @@ import { WebSocketServer } from 'ws'
 
 export * from 'ipcman'
 
-export interface IpcManDevtoolsConfig extends Omit<IpcManConfig, 'handler'> {}
+export interface IpcManDevtoolsConfig extends Omit<IpcManConfig, 'handler'> {
+  port?: number
+  host?: string
+}
 
 interface Item {
   index: number
@@ -21,7 +24,12 @@ interface Item {
 }
 
 export const ipcManDevtools = async (config: IpcManDevtoolsConfig) => {
-  const parsedConfig = Object.assign({}, config)
+  const parsedConfig = Object.assign(
+    {
+      port: 9009,
+    },
+    config,
+  )
 
   const startTime = new Date().getTime()
 
@@ -107,5 +115,5 @@ export const ipcManDevtools = async (config: IpcManDevtoolsConfig) => {
     .use(router.routes())
     .use(router.allowedMethods())
 
-  server.listen(9009)
+  server.listen(parsedConfig.port, parsedConfig.host)
 }
