@@ -6,6 +6,7 @@ import { ipcMan } from 'ipcman'
 import Koa from 'koa'
 import serve from 'koa-static'
 import { createServer } from 'node:http'
+import { existsSync } from 'node:fs'
 import { join } from 'node:path'
 import { WebSocketServer } from 'ws'
 
@@ -83,11 +84,19 @@ export const ipcManDevtools = async (config: IpcManDevtoolsConfig) => {
     ws.send(JSON.stringify(items))
   })
 
+  const DEVTOOLS_BUILD_PATH = 
+    process.env.DEVTOOLS_BUILD_PATH ||
+    join(__dirname, 'build')
+
+  // Check if build folder exists
+  if (!existsSync(DEVTOOLS_BUILD_PATH) || !existsSync(join(DEVTOOLS_BUILD_PATH, 'index.html')))
+    throw new Error(`ipcman: Frontend build does not exist, should be placed in ${DEVTOOLS_BUILD_PATH}`)
+
   app
 
     .use(cors())
 
-    .use(serve(join(__dirname, 'build')))
+    .use(serve(DEVTOOLS_BUILD_PATH))
 
     .use(bodyParser())
     .use(async (ctx, next) => {

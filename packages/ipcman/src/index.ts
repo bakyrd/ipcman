@@ -49,16 +49,28 @@ export interface IpcManWrappedResponseData extends IpcManBindData {
   type: 'wrapped-response'
 }
 
+export type IpcManRequestDataAll =
+  | IpcManRequestData
+  | IpcManHandleRequestData
+  | IpcManWrappedRequestData
+
+export type IpcManResponseDataAll =
+  | IpcManEventData
+  | IpcManHandleResponseData
+  | IpcManWrappedResponseData
+
 export type IpcManData =
   | IpcManEventData
   | IpcManRequestData
   | IpcManHandleRequestData
-  | IpcManHandleResponseData
   | IpcManWrappedRequestData
+  | IpcManHandleResponseData
   | IpcManWrappedResponseData
 
+type Awaitable<T> = T | Promise<T>
+
 export interface IpcManConfig<IpcArgs extends unknown[] = unknown[]> {
-  handler: (data: IpcManData) => unknown
+  handler: (data: IpcManData) => Awaitable<unknown>
   getId?: (p: IpcArgs) => string | undefined
 }
 
@@ -81,48 +93,49 @@ export const ipcMan = <IpcArgs extends unknown[] = unknown[]>(
     event: IpcEvent<typeof senderExcludeSymbol>,
     ...p: IpcArgs
   ) {
-    const sender = event.sender
-    if (!sender[senderExcludeSymbol]) {
-      sender[senderExcludeSymbol] = true
-
-      const send = sender.send.bind(sender)
-      sender.send = function (channel, ...e) {
-        send.call(this, channel, ...(e as unknown[]))
-
-        const id = config.getId?.(e as IpcArgs)
-        if (id)
-          config.handler({
-            type: 'wrapped-response',
-            channel,
-            args: e,
-            id,
-          })
-        else
-          config.handler({
-            type: 'event',
-            channel,
-            args: e,
-          })
+    !(async()=>{
+      const sender = event.sender
+      if (!sender[senderExcludeSymbol]) {
+        sender[senderExcludeSymbol] = true
+  
+        const send = sender.send.bind(sender)
+        sender.send = function (channel, ...e) {
+          send.call(this, channel, ...(e as unknown[]))
+  
+          const id = config.getId?.(e as IpcArgs)
+          if (id)
+            config.handler({
+              type: 'wrapped-response',
+              channel,
+              args: e,
+              id,
+            })
+          else
+            config.handler({
+              type: 'event',
+              channel,
+              args: e,
+            })
+        }
       }
-    }
-
-    emit.call(this, eventName, event, ...p)
-
-    const id = config.getId?.(p)
-    if (id)
-      config.handler({
-        type: 'wrapped-request',
-        channel: eventName as string,
-        args: p,
-        id,
-      })
-    else
-      config.handler({
-        type: 'request',
-        channel: eventName as string,
-        args: p,
-      })
-
+  
+      emit.call(this, eventName, event, ...p)
+  
+      const id = config.getId?.(p)
+      if (id)
+        config.handler({
+          type: 'wrapped-request',
+          channel: eventName as string,
+          args: p,
+          id,
+        })
+      else
+        config.handler({
+          type: 'request',
+          channel: eventName as string,
+          args: p,
+        })  
+    })()
     return false
   }
 
