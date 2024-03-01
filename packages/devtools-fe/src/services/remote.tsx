@@ -1,4 +1,4 @@
-import { freeze, original } from 'immer'
+import { original } from 'immer'
 import type { IpcManBindData, IpcManData } from 'ipcman'
 import type { FC, ReactNode } from 'react'
 import { createContext, useContext, useEffect } from 'react'
@@ -87,7 +87,10 @@ export const RemoteProvider: FC<{
               break
           }
 
-          freeze(d)
+          // FIXME: If you freeze `d`, its stale proxy will magically leaked
+          // and used by tanstack table. `JSON.stringify` will then throw errors like
+          // `Cannot perform 'get' on a proxy that has been revoked.`
+          // freeze(d)
 
           draft.data.push(d)
         }
