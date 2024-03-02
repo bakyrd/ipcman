@@ -1,5 +1,5 @@
 import { original } from 'immer'
-import type { IpcManBindData, IpcManData } from 'ipcman'
+import type { IpcMan } from 'ipcman'
 import type { FC, ReactNode } from 'react'
 import { createContext, useContext, useEffect } from 'react'
 import { useImmer } from 'use-immer'
@@ -11,7 +11,7 @@ export interface IpcManInfo {
 export interface IpcManItem {
   index: number
   timestamp: number
-  data: IpcManData & {
+  data: IpcMan.Data & {
     requestArgs?: unknown[]
     responseArgs?: unknown[]
   }
@@ -62,27 +62,11 @@ export const RemoteProvider: FC<{
           if (originalList.findIndex((x) => d.index === x) !== -1) continue
 
           switch (d.data.type) {
-            case 'event':
-              d.data.responseArgs = d.data.args
-              break
-
-            case 'request':
+            case 'send':
               d.data.requestArgs = d.data.args
               break
 
-            case 'handle-request':
-              d.data.requestArgs = d.data.args
-              break
-
-            case 'handle-response':
-              d.data.responseArgs = d.data.args
-              break
-
-            case 'wrapped-request':
-              d.data.requestArgs = d.data.args
-              break
-
-            case 'wrapped-response':
+            case 'receive':
               d.data.responseArgs = d.data.args
               break
           }
@@ -97,11 +81,7 @@ export const RemoteProvider: FC<{
 
         draft.data.forEach((x) => {
           if (x.data.responseArgs) return
-          if (
-            x.data.type !== 'handle-request' &&
-            x.data.type !== 'wrapped-request'
-          )
-            return
+          if (!x.data.binded) return
           // if (!x.data.id) return
 
           // const rType = x.data.type.replace('request', 'response') as
@@ -111,9 +91,7 @@ export const RemoteProvider: FC<{
           // const r = newData.find((y) => y.data.type === rType)
 
           const r = draft.data.find(
-            (y) =>
-              y !== x &&
-              (x.data as IpcManBindData).id === (y.data as IpcManBindData).id,
+            (y) => y !== x && x.data.bindId === (y.data as IpcMan.Data).bindId,
           )
 
           if (r) {

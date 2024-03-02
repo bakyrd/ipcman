@@ -64,8 +64,8 @@ Event|Description
 --|--
 send|Emits before sending a message to frontend.
 receive|Emits before receiving a message from frontend.
-invoke|Emits before invoking the real registered function.
 
+![](./graph.svg)
 
 ### Function `ipcMan: <IpcArgs extends unknown[] = unknown[]>(config: IpcManConfig<IpcArgs>) => IpcManContext`
 

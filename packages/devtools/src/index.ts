@@ -1,7 +1,7 @@
 import { bodyParser } from '@koa/bodyparser'
 import cors from '@koa/cors'
 import Router from '@koa/router'
-import type { IpcManConfig, IpcManData } from 'ipcman'
+import type { IpcMan } from 'ipcman'
 import { ipcMan } from 'ipcman'
 import Koa from 'koa'
 import serve from 'koa-static'
@@ -12,7 +12,8 @@ import { WebSocketServer } from 'ws'
 
 export * from 'ipcman'
 
-export interface IpcManDevtoolsConfig extends Omit<IpcManConfig, 'handler'> {
+export interface IpcManDevtoolsConfig
+  extends Omit<IpcMan.IpcManConfig, 'handler'> {
   port?: number
   host?: string
 }
@@ -20,7 +21,7 @@ export interface IpcManDevtoolsConfig extends Omit<IpcManConfig, 'handler'> {
 interface Item {
   index: number
   timestamp: number
-  data: IpcManData
+  data: IpcMan.Data
 }
 
 export const ipcManDevtools = async (config: IpcManDevtoolsConfig) => {
@@ -38,7 +39,8 @@ export const ipcManDevtools = async (config: IpcManDevtoolsConfig) => {
 
   const pushHandlers: ((raw: string) => void)[] = []
 
-  const handler = (data: IpcManData) => {
+  const handler = (data: IpcMan.Data) => {
+    if (data.type.endsWith('after')) return
     const index = i++
     const item = {
       index,
@@ -51,7 +53,7 @@ export const ipcManDevtools = async (config: IpcManDevtoolsConfig) => {
 
   ipcMan({
     ...parsedConfig,
-    handler,
+    rawHandler: handler,
   })
 
   const app = new Koa()

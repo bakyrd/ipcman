@@ -1,6 +1,6 @@
 import { Icon, Stack } from '@fluentui/react'
 import { clsx } from 'clsx/lite'
-import type { IpcManData } from 'ipcman'
+import type { IpcMan } from 'ipcman'
 import type { FC } from 'react'
 import styles from './cell.module.scss'
 import { useRemote } from '../../../services/remote'
@@ -49,46 +49,24 @@ export const IndexCell: FC<{
 }
 
 const typeMap = {
-  event: (
-    <>
-      <Icon iconName="PublishContent" />
-      <span>EVT</span>
-    </>
-  ),
-  request: (
-    <>
-      <Icon iconName="Installation" />
-      <span>REQ</span>
-    </>
-  ),
-  'handle-request': (
+  send: (
     <>
       <Icon iconName="Installation" />
       <span>HRQ</span>
     </>
   ),
-  'handle-response': (
+  receive: (
     <>
       <Icon iconName="PublishContent" />
       <span>HRS</span>
     </>
   ),
-  'wrapped-request': (
-    <>
-      <Icon iconName="Installation" />
-      <span>WRQ</span>
-    </>
-  ),
-  'wrapped-response': (
-    <>
-      <Icon iconName="PublishContent" />
-      <span>WRS</span>
-    </>
-  ),
+  'send-after': undefined,
+  'receive-after': undefined,
 } as const
 
 export const TypeCell: FC<{
-  type: IpcManData['type']
+  type: IpcMan.Data['type']
 }> = ({ type }) => (
   <Stack
     className={clsx(styles.typeCellContainer, styles[`typeCellType-${type}`])}
