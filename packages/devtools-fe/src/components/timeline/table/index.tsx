@@ -8,7 +8,7 @@ import {
 } from '@tanstack/react-table'
 import { useVirtualizer } from '@tanstack/react-virtual'
 import { clsx } from 'clsx/lite'
-import type { IpcManBindData } from 'ipcman'
+import type { IpcMan } from 'ipcman'
 import type { Dispatch, FC, MouseEvent, SetStateAction } from 'react'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import type { IpcManItem } from '../../../services/remote'
@@ -42,7 +42,7 @@ const columns = [
     cell: (info) => <TypeCell type={info.getValue()} />,
   }),
   columnHelper.accessor(
-    (x) => ((x.data as IpcManBindData).id ? (x.data as IpcManBindData).id : ''),
+    (x) => ((x.data as IpcMan.Data).id ? (x.data as IpcMan.Data).id : ''),
     {
       id: 'id',
       size: 160,
