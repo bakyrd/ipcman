@@ -41,15 +41,12 @@ const columns = [
     enableResizing: false,
     cell: (info) => <TypeCell type={info.getValue()} />,
   }),
-  columnHelper.accessor(
-    (x) => ((x.data as IpcMan.Data).id ? (x.data as IpcMan.Data).id : ''),
-    {
-      id: 'id',
-      size: 160,
-      header: () => <HeaderCell children="ID" />,
-      cell: (info) => <TextCell children={info.getValue()} />,
-    },
-  ),
+  columnHelper.accessor((x) => (x.data as IpcMan.Data).bindId ?? '', {
+    id: 'id',
+    size: 160,
+    header: () => <HeaderCell children="ID" />,
+    cell: (info) => <TextCell children={info.getValue()} />,
+  }),
   columnHelper.accessor('data.channel', {
     size: 160,
     header: () => <HeaderCell children="Channel / Method" />,
