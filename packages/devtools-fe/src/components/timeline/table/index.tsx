@@ -13,7 +13,7 @@ import type { Dispatch, FC, MouseEvent, SetStateAction } from 'react'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import type { IpcManItem } from '../../../services/remote'
 import { useRemote } from '../../../services/remote'
-import { HeaderCell, IndexCell, TextCell, TypeCell } from './cell'
+import { HeaderCell, IndexCell, PreCell, TextCell, TypeCell } from './cell'
 import styles from './index.module.scss'
 
 const columnHelper = createColumnHelper<IpcManItem>()
@@ -50,10 +50,11 @@ const columns = [
       cell: (info) => <TextCell children={info.getValue()} />,
     },
   ),
-  columnHelper.accessor('data.channel', {
+  columnHelper.accessor((x) => `${x.data.channel}\n${x.data.method || ''}`, {
+    id: 'channel',
     size: 160,
     header: () => <HeaderCell children="Channel / Method" />,
-    cell: (info) => <TextCell children={info.getValue()} />,
+    cell: (info) => <PreCell children={info.getValue()} />,
   }),
   columnHelper.accessor(
     (x) => (x.data.requestArgs ? JSON.stringify(x.data.requestArgs) : ''),

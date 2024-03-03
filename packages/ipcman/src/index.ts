@@ -18,6 +18,7 @@ export type IpcSender<IpcArgs extends unknown[] = unknown[]> = (
 
 export interface IpcManDataBase {
   channel: string
+  method: string | undefined
   args: unknown[]
 }
 
@@ -72,6 +73,7 @@ type Awaitable<T> = T | Promise<T>
 export interface IpcManConfig<IpcArgs extends unknown[] = unknown[]> {
   handler: (data: IpcManData) => Awaitable<unknown>
   getId?: (p: IpcArgs) => string | undefined
+  getMethod?: (p: IpcArgs) => string | undefined
 }
 
 export interface IpcManContext {
@@ -106,6 +108,7 @@ export const ipcMan = <IpcArgs extends unknown[] = unknown[]>(
           config.handler({
             type: 'wrapped-response',
             channel,
+            method: config.getMethod?.(e as IpcArgs),
             args: e,
             id,
           })
@@ -113,6 +116,7 @@ export const ipcMan = <IpcArgs extends unknown[] = unknown[]>(
           config.handler({
             type: 'event',
             channel,
+            method: config.getMethod?.(e as IpcArgs),
             args: e,
           })
       }
@@ -125,6 +129,7 @@ export const ipcMan = <IpcArgs extends unknown[] = unknown[]>(
       config.handler({
         type: 'wrapped-request',
         channel: eventName as string,
+        method: config.getMethod?.(p),
         args: p,
         id,
       })
@@ -132,6 +137,7 @@ export const ipcMan = <IpcArgs extends unknown[] = unknown[]>(
       config.handler({
         type: 'request',
         channel: eventName as string,
+        method: config.getMethod?.(p),
         args: p,
       })
 
@@ -146,6 +152,7 @@ export const ipcMan = <IpcArgs extends unknown[] = unknown[]>(
       config.handler({
         type: 'handle-request',
         channel: method,
+        method: config.getMethod?.(args as IpcArgs),
         args,
         id,
       })
@@ -155,6 +162,7 @@ export const ipcMan = <IpcArgs extends unknown[] = unknown[]>(
       config.handler({
         type: 'handle-response',
         channel: method,
+        method: config.getMethod?.(args as IpcArgs),
         args: [result],
         id,
       })

@@ -22,6 +22,22 @@ export const TextCell: FC<{
   )
 }
 
+export const PreCell: FC<{
+  children: string
+}> = ({ children }) => {
+  return (
+    <div
+      className={
+        children ? styles.textCellContainer : styles.textCellContainerEmpty
+      }
+    >
+      <div className={children ? styles.textCell : styles.textCellEmpty}>
+        <pre children={children} />
+      </div>
+    </div>
+  )
+}
+
 export const HeaderCell: FC<{
   children: string
 }> = ({ children }) => (
