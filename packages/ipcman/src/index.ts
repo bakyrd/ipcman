@@ -72,6 +72,7 @@ type Awaitable<T> = T | Promise<T>
 
 export interface IpcManConfig<IpcArgs extends unknown[] = unknown[]> {
   handler: (data: IpcManData) => Awaitable<unknown>
+  filter?: (data: IpcManData) => boolean | Promise<boolean>
   getId?: (p: IpcArgs) => string | undefined
   getMethod?: (p: IpcArgs) => string | undefined
 }
@@ -84,6 +85,14 @@ export interface IpcManContext {
 export const ipcMan = <IpcArgs extends unknown[] = unknown[]>(
   config: IpcManConfig<IpcArgs>,
 ): IpcManContext => {
+  const handleData = async (data: IpcManData) => {
+    if (!config.filter) {
+      config.handler(data)
+      return
+    }
+    if (await config.filter(data)) config.handler(data)
+  }
+
   const senderExcludeSymbol: unique symbol = Symbol()
 
   let iHandle = 0
@@ -105,7 +114,7 @@ export const ipcMan = <IpcArgs extends unknown[] = unknown[]>(
 
         const id = config.getId?.(e as IpcArgs)
         if (id)
-          config.handler({
+          void handleData({
             type: 'wrapped-response',
             channel,
             method: config.getMethod?.(e as IpcArgs),
@@ -113,7 +122,7 @@ export const ipcMan = <IpcArgs extends unknown[] = unknown[]>(
             id,
           })
         else
-          config.handler({
+          void handleData({
             type: 'event',
             channel,
             method: config.getMethod?.(e as IpcArgs),
@@ -126,7 +135,7 @@ export const ipcMan = <IpcArgs extends unknown[] = unknown[]>(
 
     const id = config.getId?.(p)
     if (id)
-      config.handler({
+      void handleData({
         type: 'wrapped-request',
         channel: eventName as string,
         method: config.getMethod?.(p),
@@ -134,7 +143,7 @@ export const ipcMan = <IpcArgs extends unknown[] = unknown[]>(
         id,
       })
     else
-      config.handler({
+      void handleData({
         type: 'request',
         channel: eventName as string,
         method: config.getMethod?.(p),
@@ -149,7 +158,7 @@ export const ipcMan = <IpcArgs extends unknown[] = unknown[]>(
     const wrappedFn = async (event: IpcMainInvokeEvent, ...args: unknown[]) => {
       const id = `IPCMAN_HANDLE_${iHandle++}`
 
-      config.handler({
+      void handleData({
         type: 'handle-request',
         channel: method,
         method: config.getMethod?.(args as IpcArgs),
@@ -159,7 +168,7 @@ export const ipcMan = <IpcArgs extends unknown[] = unknown[]>(
 
       const result = (await Promise.resolve(fn(event, ...args))) as unknown
 
-      config.handler({
+      void handleData({
         type: 'handle-response',
         channel: method,
         method: config.getMethod?.(args as IpcArgs),
