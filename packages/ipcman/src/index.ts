@@ -93,49 +93,48 @@ export const ipcMan = <IpcArgs extends unknown[] = unknown[]>(
     event: IpcEvent<typeof senderExcludeSymbol>,
     ...p: IpcArgs
   ) {
-    !(async()=>{
-      const sender = event.sender
-      if (!sender[senderExcludeSymbol]) {
-        sender[senderExcludeSymbol] = true
-  
-        const send = sender.send.bind(sender)
-        sender.send = function (channel, ...e) {
-          send.call(this, channel, ...(e as unknown[]))
-  
-          const id = config.getId?.(e as IpcArgs)
-          if (id)
-            config.handler({
-              type: 'wrapped-response',
-              channel,
-              args: e,
-              id,
-            })
-          else
-            config.handler({
-              type: 'event',
-              channel,
-              args: e,
-            })
-        }
+    const sender = event.sender
+    if (!sender[senderExcludeSymbol]) {
+      sender[senderExcludeSymbol] = true
+
+      const send = sender.send.bind(sender)
+      sender.send = function (channel, ...e) {
+        send.call(this, channel, ...(e as unknown[]))
+
+        const id = config.getId?.(e as IpcArgs)
+        if (id)
+          config.handler({
+            type: 'wrapped-response',
+            channel,
+            args: e,
+            id,
+          })
+        else
+          config.handler({
+            type: 'event',
+            channel,
+            args: e,
+          })
       }
-  
-      emit.call(this, eventName, event, ...p)
-  
-      const id = config.getId?.(p)
-      if (id)
-        config.handler({
-          type: 'wrapped-request',
-          channel: eventName as string,
-          args: p,
-          id,
-        })
-      else
-        config.handler({
-          type: 'request',
-          channel: eventName as string,
-          args: p,
-        })  
-    })()
+    }
+
+    emit.call(this, eventName, event, ...p)
+
+    const id = config.getId?.(p)
+    if (id)
+      config.handler({
+        type: 'wrapped-request',
+        channel: eventName as string,
+        args: p,
+        id,
+      })
+    else
+      config.handler({
+        type: 'request',
+        channel: eventName as string,
+        args: p,
+      })
+
     return false
   }
 
