@@ -140,12 +140,6 @@ export const ipcMan = <IpcArgs extends unknown[] = unknown[]>(
 
   const handle = ipcMain.handle.bind(ipcMain)
   ipcMain.handle = function (method, fn) {
-    if (typeof fn !== 'function') {
-      throw new TypeError(
-        `ipcman: Expected handler to be a function, but found type '${typeof fn}'`,
-      )
-    }
-
     const wrappedFn = async (event: IpcMainInvokeEvent, ...args: unknown[]) => {
       const id = `IPCMAN_HANDLE_${iHandle++}`
 
