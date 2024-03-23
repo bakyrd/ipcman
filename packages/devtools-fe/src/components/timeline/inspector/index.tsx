@@ -1,9 +1,10 @@
 import { Pivot, PivotItem, Stack, Toggle } from '@fluentui/react'
 import type { FC, MouseEvent } from 'react'
 import { useCallback, useEffect, useState } from 'react'
-import type { IpcManItem } from '../../../services/remote'
+import { useRemote, type IpcManItem } from '../../../services/remote'
 import { CodeInspector } from './code'
 import styles from './index.module.scss'
+import { useSelectedRow } from '../../../states'
 
 type Tab = 'request' | 'response'
 
@@ -13,6 +14,7 @@ export const TimelineInspector: FC<{
   const [tab, setTab] = useState<Tab>('request')
   const [value, setValue] = useState('')
   const [folding, setFolding] = useState(false)
+  const remote = useRemote()
 
   // Use useEffect to compute value and set tab in a single render.
   useEffect(() => {
@@ -37,18 +39,30 @@ export const TimelineInspector: FC<{
     )
   }, [tab, item])
 
-  const handleTabClick = useCallback((item?: PivotItem) => {
-    if (item) setTab(item.props.itemKey! as Tab)
-  }, [])
+  const { setSelectedRow } = useSelectedRow()
+
+  const handleTabClick = useCallback((itemTab?: PivotItem) => {
+    if (itemTab) {
+      const newTab = itemTab.props.itemKey as Tab
+      // find the corresponding data
+      const data = item?.data && remote.data.findLast(d => d?.data?.bindId === item?.data?.bindId && d?.data?.type !== item?.data?.type)
+      // console.log(data, item, data?.data?.bindId, item?.data?.bindId)
+      if (data) {
+        setSelectedRow(data.index - 1)
+      } else {
+        setTab(v => v)
+      }
+    }
+  }, [remote])
 
   const handleFoldingToggle = useCallback(
-    (_: MouseEvent, v: boolean | undefined) => setFolding(v!),
+    (_: MouseEvent, v: boolean | undefined) => setFolding(v),
     [],
   )
 
   return (
     <Stack grow>
-      <Stack className={styles.header!} horizontal>
+      <Stack className={styles.header} horizontal>
         <Stack horizontalAlign="stretch" grow>
           <Pivot
             overflowBehavior="menu"

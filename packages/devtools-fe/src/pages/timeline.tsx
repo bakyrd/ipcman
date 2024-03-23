@@ -6,22 +6,23 @@ import { TimelineInspector } from '../components/timeline/inspector'
 import { TimelineTable } from '../components/timeline/table'
 import { useRemote } from '../services/remote'
 import styles from './timeline.module.scss'
+import { useSelectedRow } from '../states'
 
 export const TimelinePage: FC = () => {
   const { data } = useRemote()
 
-  const [selected, setRowSelection] = useState<number>(-1)
+  const {selectedRow, setSelectedRow} = useSelectedRow()
 
   return (
     <Stack className={styles.timelinePageContainer} horizontal grow>
       <Stack className={styles.tableContainer}>
         <TimelineTable
-          rowSelection={selected}
-          handleRowSelection={setRowSelection}
+          rowSelection={selectedRow}
+          handleRowSelection={setSelectedRow}
         />
       </Stack>
       <Stack className={styles.inspectorContainer}>
-        <TimelineInspector item={data[selected]} />
+        <TimelineInspector item={data[selectedRow]} />
       </Stack>
     </Stack>
   )

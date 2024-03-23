@@ -13,8 +13,8 @@ export const Timer: FC = () => {
   useInterval(() => setNow(new Date().getTime()), 400)
 
   return (
-    <Stack className={styles.timerTextContainer!} verticalAlign="center">
-      <Text className={styles.timerText!}>
+    <Stack className={styles.timerTextContainer} verticalAlign="center">
+      <Text className={styles.timerText}>
         +{Math.floor((now - info.startTime) / 1000)}
       </Text>
     </Stack>

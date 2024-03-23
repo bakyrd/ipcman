@@ -7,7 +7,7 @@ import './index.scss'
 
 setAutoFreeze(false)
 
-createRoot(document.getElementById('ipcman')!).render(
+createRoot(document.getElementById('ipcman')).render(
   <StrictMode>
     <App />
   </StrictMode>,

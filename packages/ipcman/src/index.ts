@@ -209,24 +209,24 @@ export namespace IpcMan {
           sender.send = function (channel, ...e) {
             void (async () => {
               const id = config.getId?.(e as IpcArgs)
-              const ref = receiveEventCache.get(id ?? '')
+              const ref = null //receiveEventCache.get(id ?? '')
               let cancelled = false
 
               const data = {
                 type: 'send',
                 channel,
                 args: e,
-                binded: !!ref,
-                bindId: ref?.data.bindId ?? null,
-                bindData: ref?.data ?? null,
+                binded: !!id,
+                bindId: id ?? null,
+                bindData: null,
                 cancellable: true,
               } as SendData
 
-              if (ref) {
-                ref.data.binded = true
-                ref.data.bindId = id!
-                ref.data.bindData = data
-              }
+              // if (ref) {
+              //   ref.data.binded = true
+              //   ref.data.bindId = id!
+              //   ref.data.bindData = data
+              // }
 
               await emitManEvent('send', {
                 ...data,
@@ -257,13 +257,13 @@ export namespace IpcMan {
           type: 'receive',
           channel: eventName as string,
           args: p,
-          binded: false,
-          bindId: null,
+          binded: !!id,
+          bindId: id,
           bindData: null,
           cancellable: true,
-        }
+        } as ReceiveData
 
-        receiveEventCache.set(id!, { data, timestamp: Date.now() })
+        // receiveEventCache.set(id!, { data, timestamp: Date.now() })
 
         let cancelled = false
         await emitManEvent('receive', {
