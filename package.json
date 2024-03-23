@@ -21,6 +21,7 @@
     "@typescript-eslint/parser": "^7.0.1",
     "concurrently": "^8.2.2",
     "esbuild": "^0.20.2",
+    "esbuild-register": "^3.5.0",
     "eslint": "^8.56.0",
     "eslint-config-prettier": "^9.1.0",
     "eslint-config-react-app": "^7.0.1",
@@ -31,7 +32,6 @@
     "prettier": "^3.2.5",
     "ts-jest": "^29.1.2",
     "ts-node": "^10.9.2",
-    "typescript": "^5.3.3",
-    "esbuild-register": "^3.5.0"
+    "typescript": "^5.3.3"
   }
 }

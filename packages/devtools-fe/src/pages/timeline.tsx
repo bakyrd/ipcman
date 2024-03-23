@@ -10,24 +10,18 @@ import styles from './timeline.module.scss'
 export const TimelinePage: FC = () => {
   const { data } = useRemote()
 
-  const [rowSelection, setRowSelection] = useState<RowSelectionState>({})
-
-  const selected = useMemo(() => {
-    const [key] = Object.keys(rowSelection)
-    if (key) return data.find((x) => x.index === Number(key))
-    return undefined
-  }, [rowSelection, data])
+  const [selected, setRowSelection] = useState<number>(-1)
 
   return (
-    <Stack className={styles.timelinePageContainer!} horizontal grow>
-      <Stack className={styles.tableContainer!}>
+    <Stack className={styles.timelinePageContainer} horizontal grow>
+      <Stack className={styles.tableContainer}>
         <TimelineTable
-          rowSelection={rowSelection}
+          rowSelection={selected}
           handleRowSelection={setRowSelection}
         />
       </Stack>
-      <Stack className={styles.inspectorContainer!}>
-        <TimelineInspector item={selected} />
+      <Stack className={styles.inspectorContainer}>
+        <TimelineInspector item={data[selected]} />
       </Stack>
     </Stack>
   )

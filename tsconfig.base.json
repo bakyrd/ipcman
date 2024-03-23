@@ -1,5 +1,4 @@
 {
-  "extends": "@tsconfig/strictest/tsconfig",
   "compilerOptions": {
     "target": "ESNext",
     "module": "ESNext",
@@ -11,6 +10,8 @@
     "esModuleInterop": true,
     "jsx": "react-jsx",
     "noPropertyAccessFromIndexSignature": false,
+    "allowJs": true,
+    "strict": false
   },
   "ts-node": {
     "compilerOptions": {

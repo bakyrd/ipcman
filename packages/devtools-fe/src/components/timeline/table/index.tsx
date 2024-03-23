@@ -1,257 +1,216 @@
-import { Stack, Toggle } from '@fluentui/react'
-import type { Row, RowSelectionState } from '@tanstack/react-table'
-import {
-  createColumnHelper,
-  flexRender,
-  getCoreRowModel,
-  useReactTable,
-} from '@tanstack/react-table'
-import { useVirtualizer } from '@tanstack/react-virtual'
-import { clsx } from 'clsx/lite'
-import type { IpcMan } from 'ipcman'
-import type { Dispatch, FC, MouseEvent, SetStateAction } from 'react'
-import { useCallback, useEffect, useRef, useState } from 'react'
-import type { IpcManItem } from '../../../services/remote'
-import { useRemote } from '../../../services/remote'
-import { HeaderCell, IndexCell, TextCell, TypeCell } from './cell'
-import styles from './index.module.scss'
+import { useEffect, useMemo, useRef, useState } from 'react'
+import { IpcManItem, useRemote } from '../../../services/remote'
+import { createVelocity } from './tween'
 
-const columnHelper = createColumnHelper<IpcManItem>()
+let cursorX = 0, cursorY = 0
+const mmHandler: (e: MouseEvent) => void = e => {
+  cursorX = e.offsetX
+  cursorY = e.offsetY
+}
+let currentHoveringItem = -1
 
-const columns = [
-  // columnHelper.display({
-  //   id: 'xref',
-  //   header: '',
-  //   size: 48,
-  //   enableResizing: false,
-  // }),
-  columnHelper.accessor((x) => [x.index, x.timestamp], {
-    id: 'indexcol',
-    header: () => <HeaderCell children="Index" />,
-    size: 72,
-    enableResizing: false,
-    cell: (info) => {
-      const [index, timestamp] = info.getValue()
-      return <IndexCell index={index!} timestamp={timestamp!} />
-    },
-  }),
-  columnHelper.accessor('data.type', {
-    header: () => <HeaderCell children="Type" />,
-    size: 48,
-    enableResizing: false,
-    cell: (info) => <TypeCell type={info.getValue()} />,
-  }),
-  columnHelper.accessor((x) => (x.data as IpcMan.Data).bindId ?? '', {
-    id: 'id',
-    size: 160,
-    header: () => <HeaderCell children="ID" />,
-    cell: (info) => <TextCell children={info.getValue()} />,
-  }),
-  columnHelper.accessor('data.channel', {
-    size: 160,
-    header: () => <HeaderCell children="Channel / Method" />,
-    cell: (info) => <TextCell children={info.getValue()} />,
-  }),
-  columnHelper.accessor(
-    (x) =>
-      x.data.requestArgs
-        ? JSON.stringify(x.data.requestArgs).slice(0, 100)
-        : '',
-    {
-      id: 'requestArgs',
-      size: 320,
-      header: () => <HeaderCell children="Request" />,
-      cell: (info) => <TextCell children={info.getValue()} />,
-    },
-  ),
-  columnHelper.accessor(
-    (x) =>
-      x.data.responseArgs
-        ? JSON.stringify(x.data.responseArgs).slice(0, 100)
-        : '',
-    {
-      id: 'responseArgs',
-      size: 320,
-      header: () => <HeaderCell children="Response" />,
-      cell: (info) => <TextCell children={info.getValue()} />,
-    },
-  ),
-]
+/* DONT REUSE THIS COMPONENT */
+export const TimelineTable = ({
+  rowSelection,
+  handleRowSelection,
+}: {
+  rowSelection: number
+  handleRowSelection: (rowSelection: number) => void
+}) => {
+  const canvasRef = useRef<HTMLCanvasElement | null>(null)
 
-export const TimelineTable: FC<{
-  rowSelection: RowSelectionState
-  handleRowSelection: Dispatch<SetStateAction<RowSelectionState>>
-}> = ({ rowSelection, handleRowSelection }) => {
-  const { data } = useRemote()
+  const remote = useRemote()
 
-  const [autoScroll, setAutoScroll] = useState(true)
-
-  const handleAutoScrollToggle = useCallback(
-    (_: MouseEvent, v: boolean | undefined) => setAutoScroll(v!),
-    [],
-  )
-
-  const table = useReactTable({
-    columns,
-    data,
-
-    getCoreRowModel: getCoreRowModel(),
-
-    enableColumnResizing: true,
-    columnResizeMode: 'onChange',
-
-    getRowId: (row) => `${row.index}`,
-
-    state: {
-      rowSelection,
-    },
-
-    enableRowSelection: true,
-    enableMultiRowSelection: false,
-    enableSubRowSelection: false,
-    onRowSelectionChange: handleRowSelection,
-  })
-
-  const { rows } = table.getRowModel()
-
-  const tableContainerRef = useRef<HTMLDivElement>(null)
-
-  const rowVirtualizer = useVirtualizer({
-    count: rows.length,
-
-    estimateSize: () => 48, // Estimate row height for accurate scrollbar dragging
-
-    getScrollElement: () => tableContainerRef.current,
-
-    // Measure dynamic row height, except in firefox because it measures table border height incorrectly
-    // measureElement:
-    //   typeof window !== 'undefined' &&
-    //   navigator.userAgent.indexOf('Firefox') === -1
-    //     ? (element) => element?.getBoundingClientRect().height
-    //     : (undefined as unknown as () => number),
-
-    // measureElement: () => 48,
-
-    overscan: 5,
-  })
+  const scrollHeightTween = useMemo(() => createVelocity({
+    minVal: 0,
+  }), [])
 
   useEffect(() => {
-    if (data.length && autoScroll)
-      if (autoScroll && tableContainerRef.current)
-        // rowVirtualizer.scrollToIndex(data.length, {
-        //   align: 'end',
+    if (!canvasRef.current) return
 
-        //   // @ts-expect-error Tanstack Type Err
-        //   smoothScroll: true,
-        // })
+    const ctx = canvasRef.current.getContext('2d')
 
-        tableContainerRef.current.scrollTop =
-          tableContainerRef.current.scrollHeight
-  }, [data, autoScroll, rowVirtualizer])
+    canvasRef.current.addEventListener('mousemove', mmHandler)
 
-  const headerNodes = table.getHeaderGroups().map((headerGroup) => {
-    const headerCellNodes = headerGroup.headers.map((header) => {
-      return (
-        <th
-          className={styles.tHeadCell}
-          key={header.id}
-          colSpan={header.colSpan}
-          style={{
-            width: header.getSize(),
-          }}
-        >
-          {header.isPlaceholder
-            ? null
-            : flexRender(header.column.columnDef.header, header.getContext())}
-          {header.column.getCanResize() && (
-            <div
-              className={clsx(
-                styles.resizer,
-                header.column.getIsResizing() && styles.isResizing,
-              )}
-              onDoubleClick={() => header.column.resetSize()}
-              onMouseDown={header.getResizeHandler()}
-              onTouchStart={header.getResizeHandler()}
-            ></div>
-          )}
-        </th>
-      )
-    })
+    canvasRef.current.onclick = () => {
+      if (currentHoveringItem === -1) return
+      handleRowSelection(currentHoveringItem)
+    }
 
-    return (
-      <tr
-        className={styles.tHeadRow}
-        key={headerGroup.id}
-        children={headerCellNodes}
-      />
-    )
-  })
+    const draw = (deltaT) => {
+      if (!ctx) return
+      ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height)
 
-  const bodyNodes = rowVirtualizer.getVirtualItems().map((virtualRow) => {
-    const row = rows[virtualRow.index] as Row<IpcManItem>
+      const top = -scrollHeightTween.value;
 
-    const rowCellNodes = row.getVisibleCells().map((cell) => {
-      return (
-        <td
-          className={styles.tCell}
-          key={cell.id}
-          style={{
-            width: cell.column.getSize(),
-          }}
-        >
-          {flexRender(cell.column.columnDef.cell, cell.getContext())}
-        </td>
-      )
-    })
+      const lineHeight = 40
+      const padding = 10
 
-    return (
-      <tr
-        className={clsx(styles.tRow, row.getIsSelected() && styles.selected)}
-        data-index={virtualRow.index} // Needed for dynamic row height measurement
-        ref={(node) => rowVirtualizer.measureElement(node)} // Measure dynamic row height
-        key={row.id}
-        style={{
-          transform: `translateY(${virtualRow.start}px)`, // This should always be a `style` as it changes on scroll
-        }}
-        onClick={row.getToggleSelectedHandler()}
-        children={rowCellNodes}
-      />
-    )
-  })
+      const firstDataIndex = Math.floor(-top / lineHeight)
+      const lastDataIndex = Math.ceil((-top + ctx.canvas.height) / lineHeight)
 
-  const tableNodes = (
-    <div className={styles.overflowContainer} ref={tableContainerRef}>
-      {/* Even though we're still using sematic table tags, we must use CSS grid and flexbox for dynamic row heights */}
-      <table className={styles.table}>
-        <thead className={styles.tHead} children={headerNodes} />
-        <tbody
-          className={styles.tBody}
-          style={{
-            height: `${rowVirtualizer.getTotalSize()}px`, // Tells scrollbar how big the table is
-          }}
-          children={bodyNodes}
-        />
-      </table>
-    </div>
-  )
+      interface RowInfo {
+        title: string
+        width: number
+        data?(data: IpcManItem): string
+        draw?(data: IpcManItem, x: number, y: number): void
+      }
+
+      const rowInfo: RowInfo[] = [
+        {
+          title: 'Index',
+          width: 100,
+          data(data) {
+            return data.timestamp.toString()
+          }
+        },
+        {
+          title: 'Type',
+          width: 100,
+          data(data) {
+            return data.data.type
+          }
+        },
+        {
+          title: 'Request Args',
+          width: 200,
+          data(data) {
+            return data.data.requestArgs?.join(', ') || ''
+          }
+        },
+        {
+          title: 'Response Args',
+          width: 200,
+          data(data) {
+            return data.data.responseArgs?.join(', ') || ''
+          }
+        }
+      ]
+
+      // Draw data
+      for (let i = firstDataIndex; i < lastDataIndex; i++) {
+        const data = remote.data[i]
+        if (!data) continue
+
+        const y = i * lineHeight + top + padding
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+        ctx.fillStyle = rowSelection === data.index ? 'rgba(0, 0, 0, 0.1)' : 'transparent'
+        ctx.fillRect(0, y, ctx.canvas.width, lineHeight - padding)
+        ctx.font = '14px Noto Sans CJK SC'
+        let x = 0
+        for (const row of rowInfo) {
+          // inner content(clipped)
+          ctx.save()
+          ctx.beginPath()
+          x += padding
+          ctx.rect(x, y, row.width, lineHeight - padding)
+          ctx.clip()
+
+          if (row.data) {
+            ctx.fillStyle = 'white'
+            ctx.textAlign = 'center'
+            ctx.fillText(row.data(data), x +
+              row.width / 2
+              , y + padding + 7)
+          } else if (row.draw) {
+            row.draw(data, x, y)
+          } else {
+            ctx.fillText('Unknown', x, y + padding)
+          }
+
+          x += row.width + padding
+
+          ctx.restore()
+
+          // border
+          ctx.fillStyle = '#3E4452'
+          ctx.fillRect(x, y, 1, lineHeight + padding)
+        }
+
+        // border
+        ctx.fillStyle = '#3E4452'
+        ctx.fillRect(0, y - padding, ctx.canvas.width, 1)
+
+        // hover effect
+        if (cursorY > y && cursorY < y + lineHeight) {
+          ctx.fillStyle = '#ffffff11'
+          ctx.fillRect(0, y - padding, ctx.canvas.width, lineHeight)
+          currentHoveringItem = data.index
+        }
+
+        // selected effect
+        if (rowSelection === data.index) {
+          ctx.fillStyle = '#aaaaff22'
+          ctx.fillRect(0, y - padding, ctx.canvas.width, lineHeight)
+        }
+      }
+
+      // Draw header
+
+      let x = 0
+      for (const row of rowInfo) {
+        const width = row.width + padding * 2
+        ctx.fillStyle = '#252525'
+        ctx.font = '14px Noto Sans CJK SC'
+        ctx.fillRect(x, 0, width, lineHeight)
+        ctx.fillStyle = 'white'
+        ctx.textAlign = 'center'
+        ctx.textBaseline = 'middle'
+        ctx.fillText(row.title, x + width / 2, lineHeight / 2)
+
+        // border
+        ctx.fillStyle = '#3E4452'
+        ctx.fillRect(x, 0, 1, lineHeight)
+        x += width
+        ctx.fillRect(x, 0, 1, lineHeight)
+      }
+    }
+
+    let rAFHandle: number
+    let lastTime: number = -1
+    const loop = (time: number) => {
+      if (lastTime === -1) lastTime = time
+      const deltaT = time - lastTime
+      lastTime = time
+      scrollHeightTween.update(deltaT)
+      draw(deltaT)
+
+      rAFHandle = requestAnimationFrame(loop)
+    }
+
+    rAFHandle = requestAnimationFrame(loop)
+
+    return () => {
+      cancelAnimationFrame(rAFHandle)
+      canvasRef.current?.removeEventListener('mousemove', mmHandler)
+    }
+  }, [rowSelection, remote])
+
+  const [width, setWidth] = useState(0)
+  const [height, setHeight] = useState(0)
+  useEffect(() => {
+    const handleResize = () => {
+      if (!canvasRef.current) return
+      const { width, height } = canvasRef.current.parentElement.getBoundingClientRect()
+      setWidth(width)
+      setHeight(height)
+    }
+
+    handleResize()
+    window.addEventListener('resize', handleResize)
+
+    return () => {
+      window.removeEventListener('resize', handleResize)
+    }
+  }, [])
 
   return (
-    <Stack grow>
-      <Stack className={styles.header!} horizontal>
-        <Stack horizontalAlign="start" grow />
-        <Stack horizontalAlign="end" verticalAlign="center">
-          <Toggle
-            className={styles.toggle}
-            label="Auto Scroll"
-            onText="On"
-            offText="Off"
-            inlineLabel
-            checked={autoScroll}
-            onChange={handleAutoScrollToggle}
-          />
-        </Stack>
-      </Stack>
-      <Stack grow children={tableNodes} />
-    </Stack>
+    <div style={{
+      height: '100%',
+    }}>
+      <canvas ref={canvasRef} onWheel={e => {
+        scrollHeightTween.speed = e.deltaY / 30
+      }} width={width} height={height} />
+    </div>
   )
 }
