@@ -3,6 +3,7 @@ import { IpcManItem, useRemote } from '../../../services/remote'
 import { createVelocity } from './tween'
 import { BaseButton, CommandButton, DefaultButton, Toggle } from '@fluentui/react'
 import s from './index.module.scss'
+import { useReqDataExtractorCode, useRespDataExtractorCode } from '../../../states'
 
 const lineHeight = 40
 const padding = 10
@@ -13,45 +14,6 @@ interface RowInfo {
   data?(data: IpcManItem): string
   draw?(data: IpcManItem, x: number, y: number): void
 }
-
-const rowInfo: RowInfo[] = [
-  {
-    title: 'Index',
-    width: 40,
-    data(data) {
-      return data.index.toString()
-    }
-  },
-  {
-    title: 'Timestamp',
-    width: 70,
-    data(data) {
-      return new Date(data.timestamp).toLocaleTimeString()
-    }
-  },
-  {
-    title: 'Type',
-    width: 100,
-    data(data) {
-      return data.data.type
-    }
-  },
-  {
-    title: 'Request Args',
-    width: 200,
-    data(data) {
-      return data.data.requestArgs?.join(', ') || ''
-    }
-  },
-  {
-    title: 'Response Args',
-    width: 200,
-    data(data) {
-      return data.data.responseArgs?.join(', ') || ''
-    }
-  }
-]
-
 
 
 let cursorX = 0, cursorY = 0
@@ -80,6 +42,25 @@ export const TimelineTable = ({
     value: -lineHeight
   }), [])
 
+  const [reqDataExtractorCode] = useReqDataExtractorCode()
+  const reqDataExtractor = useMemo(() => {
+    try {
+      // eslint-disable-next-line @typescript-eslint/no-implied-eval
+      return new Function('data', reqDataExtractorCode)
+    } catch (e) {
+      return (data: unknown[]) => data.join(', ')
+    }
+  }, [reqDataExtractorCode])
+  const [respDataExtractorCode] = useRespDataExtractorCode()
+  const respDataExtractor = useMemo(() => {
+    try {
+      // eslint-disable-next-line @typescript-eslint/no-implied-eval
+      return new Function('data', respDataExtractorCode)
+    } catch (e) {
+      return (data: unknown[]) => data.join(', ')
+    }
+  }, [])
+
   useEffect(() => {
     if (!canvasRef.current) return
 
@@ -91,6 +72,46 @@ export const TimelineTable = ({
       if (currentHoveringItem === -1) return
       handleRowSelection(currentHoveringItem)
     }
+
+    const rowInfo: RowInfo[] = [
+      {
+        title: 'Index',
+        width: 40,
+        data(data) {
+          return data.index.toString()
+        }
+      },
+      {
+        title: 'Timestamp',
+        width: 70,
+        data(data) {
+          return new Date(data.timestamp).toLocaleTimeString()
+        }
+      },
+      {
+        title: 'Type',
+        width: 100,
+        data(data) {
+          return data.data.type
+        }
+      },
+      {
+        title: 'Request Args',
+        width: 200,
+        data(data) {
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+          return reqDataExtractor(data.data.requestArgs || [])
+        }
+      },
+      {
+        title: 'Response Args',
+        width: 200,
+        data(data) {
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+          return respDataExtractor(data.data.responseArgs || [])
+        }
+      }
+    ]
 
     const draw = (deltaT) => {
       if (!ctx) return
