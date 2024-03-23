@@ -14,6 +14,10 @@ export const createVelocity = ({
     get value() {
       return value
     },
+    set value(v) {
+      value = v
+      speed = 0
+    },
     update(deltaTime: number) {
       value += speed * deltaTime
       speed *= ds

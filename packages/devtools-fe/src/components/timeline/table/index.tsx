@@ -1,6 +1,58 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { IpcManItem, useRemote } from '../../../services/remote'
 import { createVelocity } from './tween'
+import { BaseButton, CommandButton, DefaultButton, Toggle } from '@fluentui/react'
+import s from './index.module.scss'
+
+const lineHeight = 40
+const padding = 10
+
+interface RowInfo {
+  title: string
+  width: number
+  data?(data: IpcManItem): string
+  draw?(data: IpcManItem, x: number, y: number): void
+}
+
+const rowInfo: RowInfo[] = [
+  {
+    title: 'Index',
+    width: 40,
+    data(data) {
+      return data.index.toString()
+    }
+  },
+  {
+    title: 'Timestamp',
+    width: 70,
+    data(data) {
+      return new Date(data.timestamp).toLocaleTimeString()
+    }
+  },
+  {
+    title: 'Type',
+    width: 100,
+    data(data) {
+      return data.data.type
+    }
+  },
+  {
+    title: 'Request Args',
+    width: 200,
+    data(data) {
+      return data.data.requestArgs?.join(', ') || ''
+    }
+  },
+  {
+    title: 'Response Args',
+    width: 200,
+    data(data) {
+      return data.data.responseArgs?.join(', ') || ''
+    }
+  }
+]
+
+
 
 let cursorX = 0, cursorY = 0
 const mmHandler: (e: MouseEvent) => void = e => {
@@ -17,12 +69,15 @@ export const TimelineTable = ({
   rowSelection: number
   handleRowSelection: (rowSelection: number) => void
 }) => {
+  const [autoscroll, setAutoscroll] = useState(true)
+
   const canvasRef = useRef<HTMLCanvasElement | null>(null)
 
   const remote = useRemote()
 
   const scrollHeightTween = useMemo(() => createVelocity({
-    minVal: 0,
+    minVal: -lineHeight,
+    value: -lineHeight
   }), [])
 
   useEffect(() => {
@@ -43,49 +98,9 @@ export const TimelineTable = ({
 
       const top = -scrollHeightTween.value;
 
-      const lineHeight = 40
-      const padding = 10
 
       const firstDataIndex = Math.floor(-top / lineHeight)
       const lastDataIndex = Math.ceil((-top + ctx.canvas.height) / lineHeight)
-
-      interface RowInfo {
-        title: string
-        width: number
-        data?(data: IpcManItem): string
-        draw?(data: IpcManItem, x: number, y: number): void
-      }
-
-      const rowInfo: RowInfo[] = [
-        {
-          title: 'Index',
-          width: 100,
-          data(data) {
-            return data.timestamp.toString()
-          }
-        },
-        {
-          title: 'Type',
-          width: 100,
-          data(data) {
-            return data.data.type
-          }
-        },
-        {
-          title: 'Request Args',
-          width: 200,
-          data(data) {
-            return data.data.requestArgs?.join(', ') || ''
-          }
-        },
-        {
-          title: 'Response Args',
-          width: 200,
-          data(data) {
-            return data.data.responseArgs?.join(', ') || ''
-          }
-        }
-      ]
 
       // Draw data
       for (let i = firstDataIndex; i < lastDataIndex; i++) {
@@ -205,12 +220,34 @@ export const TimelineTable = ({
   }, [])
 
   return (
-    <div style={{
-      height: '100%',
+    <div className="timeline" style={{
+      height: '100%'
     }}>
-      <canvas ref={canvasRef} onWheel={e => {
-        scrollHeightTween.speed = e.deltaY / 30
-      }} width={width} height={height} />
+      <div className={s.options}>
+        <div className={s.navigation}>
+          <Toggle checked={autoscroll} onChange={(_, v) => setAutoscroll(v)} label="Autoscroll"
+            inlineLabel />
+          <DefaultButton onClick={() => {
+            scrollHeightTween.value = 0
+          }}>
+            Scroll to top
+          </DefaultButton>
+
+          <DefaultButton onClick={() => {
+            scrollHeightTween.value = remote.data.length * lineHeight - 400
+          }}>
+            Scroll to bottom
+          </DefaultButton>
+        </div>
+      </div>
+      <div style={{
+        height: '100%',
+      }}>
+        <canvas ref={canvasRef} onWheel={e => {
+          if (e.shiftKey) scrollHeightTween.speed = e.deltaY / 3
+          else scrollHeightTween.speed = e.deltaY / 30
+        }} width={width} height={height} />
+      </div>
     </div>
   )
 }
