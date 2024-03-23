@@ -14,7 +14,9 @@ export const TimelinePage: FC = () => {
   const {selectedRow, setSelectedRow} = useSelectedRow()
 
   return (
-    <Stack className={styles.timelinePageContainer} horizontal grow>
+    <Stack className={styles.timelinePageContainer} horizontal style={{
+      height: '100%'
+    }}>
       <Stack className={styles.tableContainer}>
         <TimelineTable
           rowSelection={selectedRow}

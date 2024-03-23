@@ -42,6 +42,20 @@ export const TimelineTable = ({
     value: -lineHeight
   }), [])
 
+  useEffect(() => {
+    if (autoscroll) {
+      let lastDataIndex = remote.data.length
+      const h = setInterval(() => {
+        if (lastDataIndex === remote.data.length) return
+        scrollHeightTween.value += lineHeight * (remote.data.length - lastDataIndex)
+        lastDataIndex = remote.data.length
+      }, 40)
+      return () => {
+        clearInterval(h)
+      }
+    }
+  }, [autoscroll])
+
   // eslint-disable-next-line @typescript-eslint/ban-types
   const wrapTryCatch = (fn: Function) => {
     return (...args: unknown[]) => {
@@ -277,7 +291,7 @@ export const TimelineTable = ({
           </DefaultButton>
 
           <DefaultButton onClick={() => {
-            scrollHeightTween.value = remote.data.length * lineHeight - 400
+            scrollHeightTween.value = remote.data.length * lineHeight - height + 100
           }}>
             Scroll to bottom
           </DefaultButton>
