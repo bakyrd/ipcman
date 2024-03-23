@@ -11,3 +11,5 @@ export const useCurrentPage = create<{
 
 export const useReqDataExtractorCode = () => useLocalStorage('req-data-extractor-code', 'return data.join(",")')
 export const useRespDataExtractorCode = () => useLocalStorage('resp-data-extractor-code', 'return data.join(",")')
+export const useDataColorFlag = () => useLocalStorage('data-color-flag', 'return "#141414"')
+export const useDataFilter = () => useLocalStorage('data-filter', 'return true')

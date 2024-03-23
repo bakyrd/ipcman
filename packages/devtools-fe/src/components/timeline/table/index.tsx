@@ -3,7 +3,7 @@ import { IpcManItem, useRemote } from '../../../services/remote'
 import { createVelocity } from './tween'
 import { BaseButton, CommandButton, DefaultButton, Toggle } from '@fluentui/react'
 import s from './index.module.scss'
-import { useReqDataExtractorCode, useRespDataExtractorCode } from '../../../states'
+import { useDataColorFlag, useDataFilter, useReqDataExtractorCode, useRespDataExtractorCode } from '../../../states'
 
 const lineHeight = 40
 const padding = 10
@@ -12,7 +12,7 @@ interface RowInfo {
   title: string
   width: number
   data?(data: IpcManItem): string
-  draw?(data: IpcManItem, x: number, y: number): void
+  draw?(data: IpcManItem, ctx: CanvasRenderingContext2D, x: number, y: number): void
 }
 
 
@@ -55,25 +55,22 @@ export const TimelineTable = ({
     }
   }
 
-  const [reqDataExtractorCode] = useReqDataExtractorCode()
-  const reqDataExtractor = useMemo(() => {
-    try {
-      // eslint-disable-next-line @typescript-eslint/no-implied-eval
-      const fn = new Function('data', reqDataExtractorCode)
-      return wrapTryCatch(fn)
-    } catch (e) {
-      return (data: unknown[]) => data.join(', ')
-    }
-  }, [reqDataExtractorCode])
-  const [respDataExtractorCode] = useRespDataExtractorCode()
-  const respDataExtractor = useMemo(() => {
-    try {
-      // eslint-disable-next-line @typescript-eslint/no-implied-eval
-      return wrapTryCatch(new Function('data', respDataExtractorCode))
-    } catch (e) {
-      return (data: unknown[]) => data.join(', ')
-    }
-  }, [])
+  const useCodeFunc = <T,>(hook: typeof useReqDataExtractorCode, defaultFunc: T) => {
+    const [code] = hook()
+    return useMemo(() => {
+      try {
+        // eslint-disable-next-line @typescript-eslint/no-implied-eval
+        const fn = new Function('data', 'type', 'index', code)
+        return wrapTryCatch(fn)
+      } catch (e) {
+        return defaultFunc
+      }
+    }, [code])
+  }
+  const reqDataExtractor = useCodeFunc(useReqDataExtractorCode, (data: unknown[], type: string, index: number) => JSON.stringify(data))
+  const respDataExtractor = useCodeFunc(useRespDataExtractorCode, (data: unknown[], type: string, index: number) => JSON.stringify(data))
+  const dataColorFlagExtractor = useCodeFunc(useDataColorFlag, (data: unknown[], type: string, index: number) => 'black')
+  const dataFilter = useCodeFunc(useDataFilter, (data: unknown[], type: string, index: number) => true)
 
   useEffect(() => {
     if (!canvasRef.current) return
@@ -91,6 +88,15 @@ export const TimelineTable = ({
     const argWidth = (canvasWidth - 40 - 70 - 50 - padding * 5 * 2) / 2
 
     const rowInfo: RowInfo[] = [
+      {
+        title: '',
+        width: 6,
+        draw(data, ctx, x, y) {
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+          ctx.fillStyle = dataColorFlagExtractor(data.data.requestArgs || [], data.data.type, data.index) ?? 'black'
+          ctx.fillRect(x - padding, y, 15 + padding, lineHeight - padding * 2)
+        },
+      },
       {
         title: 'Index',
         width: 40,
@@ -117,7 +123,7 @@ export const TimelineTable = ({
         width: argWidth,
         data(data) {
           // eslint-disable-next-line @typescript-eslint/no-unsafe-return
-          return reqDataExtractor(data.data.requestArgs || [])
+          return reqDataExtractor(data.data.requestArgs || [], data.data.type, data.index)
         }
       },
       {
@@ -125,7 +131,7 @@ export const TimelineTable = ({
         width: argWidth,
         data(data) {
           // eslint-disable-next-line @typescript-eslint/no-unsafe-return
-          return respDataExtractor(data.data.responseArgs || [])
+          return respDataExtractor(data.data.responseArgs || [], data.data.type, data.index)
         }
       }
     ]
@@ -166,7 +172,7 @@ export const TimelineTable = ({
               row.width / 2
               , y + padding + 7)
           } else if (row.draw) {
-            row.draw(data, x, y)
+            row.draw(data, ctx, x, y)
           } else {
             ctx.fillText('Unknown', x, y + padding)
           }
