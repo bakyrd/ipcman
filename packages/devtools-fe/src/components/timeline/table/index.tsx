@@ -53,7 +53,10 @@ const columns = [
     cell: (info) => <TextCell children={info.getValue()} />,
   }),
   columnHelper.accessor(
-    (x) => (x.data.requestArgs ? JSON.stringify(x.data.requestArgs) : ''),
+    (x) =>
+      x.data.requestArgs
+        ? JSON.stringify(x.data.requestArgs).slice(0, 100)
+        : '',
     {
       id: 'requestArgs',
       size: 320,
@@ -62,7 +65,10 @@ const columns = [
     },
   ),
   columnHelper.accessor(
-    (x) => (x.data.responseArgs ? JSON.stringify(x.data.responseArgs) : ''),
+    (x) =>
+      x.data.responseArgs
+        ? JSON.stringify(x.data.responseArgs).slice(0, 100)
+        : '',
     {
       id: 'responseArgs',
       size: 320,
@@ -130,17 +136,17 @@ export const TimelineTable: FC<{
   })
 
   useEffect(() => {
-    // if (data.length && autoScroll)
-    //   rowVirtualizer.scrollToIndex(data.length, {
-    //     align: 'end',
+    if (data.length && autoScroll)
+      if (autoScroll && tableContainerRef.current)
+        // rowVirtualizer.scrollToIndex(data.length, {
+        //   align: 'end',
 
-    //     // @ts-expect-error Tanstack Type Err
-    //     smoothScroll: true,
-    //   })
+        //   // @ts-expect-error Tanstack Type Err
+        //   smoothScroll: true,
+        // })
 
-    if (autoScroll && tableContainerRef.current)
-      tableContainerRef.current.scrollTop =
-        tableContainerRef.current.scrollHeight
+        tableContainerRef.current.scrollTop =
+          tableContainerRef.current.scrollHeight
   }, [data, autoScroll, rowVirtualizer])
 
   const headerNodes = table.getHeaderGroups().map((headerGroup) => {

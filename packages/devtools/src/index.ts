@@ -128,4 +128,8 @@ export const ipcManDevtools = async (config: IpcManDevtoolsConfig) => {
     .use(router.allowedMethods())
 
   server.listen(parsedConfig.port, parsedConfig.host)
+
+  console.log(
+    `ipcman-devtools: Listening on ${parsedConfig.host}:${parsedConfig.port}`,
+  )
 }
