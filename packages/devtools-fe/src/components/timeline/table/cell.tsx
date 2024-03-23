@@ -52,13 +52,15 @@ const typeMap = {
   send: (
     <>
       <Icon iconName="Installation" />
-      <span>HRQ</span>
+      <span>IPC</span>
+      <small>Recv</small>
     </>
   ),
   receive: (
     <>
       <Icon iconName="PublishContent" />
-      <span>HRS</span>
+      <span>IPC</span>
+      <small>Send</small>
     </>
   ),
   'send-after': undefined,

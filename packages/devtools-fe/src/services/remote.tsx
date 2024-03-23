@@ -48,9 +48,12 @@ export const RemoteProvider: FC<{
   const [data, editData] = useImmer<RemoteIntl>(defultRemote)
 
   useEffect(() => {
-    const ws = new WebSocket(
-      location.origin.replace(/^http/, 'ws') + '/v0/events',
-    )
+    const searchParams = new URLSearchParams(location.search)
+    let remoteUrl
+    if (searchParams.has('ws')) remoteUrl = searchParams.get('ws')!
+    else remoteUrl = location.origin.replace(/^http/, 'ws') + '/v0/events'
+
+    const ws = new WebSocket(remoteUrl)
 
     ws.addEventListener('message', (e) => {
       const newData = JSON.parse(e.data as string) as IpcManItem[]

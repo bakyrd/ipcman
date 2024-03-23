@@ -32,7 +32,15 @@
 
   & span {
     margin: 2px 0;
-    font-weight: bold;
+    font-weight: 500;
+    display: flex;
+  }
+
+  small {
+    opacity: 0.5;
+    font-weight: 400;
+    line-height: 1px;
+    font-size: 9px;
   }
 
   &Container {
