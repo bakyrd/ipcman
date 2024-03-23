@@ -42,11 +42,25 @@ export const TimelineTable = ({
     value: -lineHeight
   }), [])
 
+  // eslint-disable-next-line @typescript-eslint/ban-types
+  const wrapTryCatch = (fn: Function) => {
+    return (...args: unknown[]) => {
+      try {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+        return fn(...args) ?? ''
+      } catch (e) {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-call
+        return e
+      }
+    }
+  }
+
   const [reqDataExtractorCode] = useReqDataExtractorCode()
   const reqDataExtractor = useMemo(() => {
     try {
       // eslint-disable-next-line @typescript-eslint/no-implied-eval
-      return new Function('data', reqDataExtractorCode)
+      const fn = new Function('data', reqDataExtractorCode)
+      return wrapTryCatch(fn)
     } catch (e) {
       return (data: unknown[]) => data.join(', ')
     }
@@ -55,7 +69,7 @@ export const TimelineTable = ({
   const respDataExtractor = useMemo(() => {
     try {
       // eslint-disable-next-line @typescript-eslint/no-implied-eval
-      return new Function('data', respDataExtractorCode)
+      return wrapTryCatch(new Function('data', respDataExtractorCode))
     } catch (e) {
       return (data: unknown[]) => data.join(', ')
     }
@@ -70,8 +84,11 @@ export const TimelineTable = ({
 
     canvasRef.current.onclick = () => {
       if (currentHoveringItem === -1) return
-      handleRowSelection(currentHoveringItem)
+      handleRowSelection(currentHoveringItem - 1)
     }
+
+    const canvasWidth = canvasRef.current.width
+    const argWidth = (canvasWidth - 40 - 70 - 50 - padding * 5 * 2) / 2
 
     const rowInfo: RowInfo[] = [
       {
@@ -90,14 +107,14 @@ export const TimelineTable = ({
       },
       {
         title: 'Type',
-        width: 100,
+        width: 50,
         data(data) {
           return data.data.type
         }
       },
       {
         title: 'Request Args',
-        width: 200,
+        width: argWidth,
         data(data) {
           // eslint-disable-next-line @typescript-eslint/no-unsafe-return
           return reqDataExtractor(data.data.requestArgs || [])
@@ -105,7 +122,7 @@ export const TimelineTable = ({
       },
       {
         title: 'Response Args',
-        width: 200,
+        width: argWidth,
         data(data) {
           // eslint-disable-next-line @typescript-eslint/no-unsafe-return
           return respDataExtractor(data.data.responseArgs || [])
@@ -175,14 +192,13 @@ export const TimelineTable = ({
         }
 
         // selected effect
-        if (rowSelection === data.index) {
+        if (rowSelection === data.index - 1) {
           ctx.fillStyle = '#aaaaff22'
           ctx.fillRect(0, y - padding, ctx.canvas.width, lineHeight)
         }
       }
 
       // Draw header
-
       let x = 0
       for (const row of rowInfo) {
         const width = row.width + padding * 2
