@@ -9,7 +9,7 @@
   "scripts": {
     "clean": "ts-node -T scripts/clean.cts",
     "build": "yarn workspace ipcman build && concurrently -n devtools,fe \"yarn workspace @ipcman/devtools build\" \"yarn workspace @ipcman/devtools-fe build\"",
-    "build2": "node -r esbuild-register ./scripts/build.cts"
+    "build-fast": "node -r esbuild-register ./scripts/build.cts"
   },
   "devDependencies": {
     "@tsconfig/strictest": "^2.0.3",
