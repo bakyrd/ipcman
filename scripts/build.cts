@@ -1,5 +1,5 @@
 import { build } from 'esbuild'
-import { copyFile } from 'fs/promises'
+import { copyFile, readFile, writeFile } from 'fs/promises'
 
 void (async () => {
   const startTs = Date.now()
@@ -31,8 +31,6 @@ void (async () => {
     format: 'esm'
   })])
 
-
-
   await build({
     entryPoints: ['packages/devtools/src/index.ts'],
     bundle: true,
@@ -42,6 +40,10 @@ void (async () => {
     sourcemap: true,
     outfile: 'build/devtools.js',
   })
+
+  // replace require("electron") with eval('require("electron")')
+  const devtools = await readFile('build/devtools.js', 'utf-8')
+  await writeFile('build/devtools.js', devtools.replaceAll('require("electron")', 'eval(\'require("electron")\')'))
 
   await copyFile('build/devtools.js','packages/devtools/lib/index.js')
 
